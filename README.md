@@ -151,10 +151,10 @@ Pikachu: hello
 ```
 
 ## Signals
-The signal are important, when we are using composite activities. For example, we can have the entity,
-which represents customer's `Order`. During processing of `Order` the customer will need to perform `Payment`,
-which is represented by `Payment` entity. Once the customer finishes `Payment` we need to notify `Order`.
-For this purpose the toolkit is using signals (see example bellow).
+The signal are important, when we need to compose the activity from smaller objects. For example:
+we can have the entity, which represents customer's `Order`. During processing of `Order` the customer
+will need to perform payment, which is represented by `Payment` entity. Once the customer finishes `Payment`
+we need to notify `Order`, which can perform transition to the next state.
 
 First it is necessary to define DTO for the signal:
 ```java
