@@ -51,7 +51,7 @@ public interface AnimalService {
 }
 ```
 
-Then we can define spring services and bind the to the entities using `@DomainService`:
+Then we can define services and bind them to the entities using `@DomainService`:
 ```java
 @Service
 @DomainService(servicePointName = "animalServicePoint", subjectClass = Animal.class)
@@ -74,7 +74,7 @@ public class DogServiceImpl implements AnimalService {
 
 Finally we can load animals from database and check, what sound they makes. We will send all
 requests to servicepoint (injected using qualifier`@ServicePointReference`) and the toolkit
-find dispatch the request to the proper domain service based on the type of subject entity.
+will dispatch the request to the proper domain service based on the type of subject entity.
 ```java
 @Service
 public class TestBean {
@@ -152,11 +152,11 @@ Pikachu: hello
 
 ## Signals
 The signal are important, when we are using composite activities. For example, we can have the entity,
-which represents customer's `Order`. At some point the customer need to perform `Payment`, which is
-another entity `Payment`, which was created based on `Order`. Once the customer finishes `Payment`
-we need to notify `Order`. A such situation can be solved using signals.
+which represents customer's `Order`. During processing of `Order` the customer will need to perform `Payment`,
+which is represented by `Payment` entity. Once the customer finishes `Payment` we need to notify `Order`.
+For this purpose the toolkit is using signals (see example bellow).
 
-First it is necessary to define serializable DTO for signal. For example:
+First it is necessary to define DTO for the signal:
 ```java
 public enum CallbackTarget {
     ORDER_SERVICE, LOAN_SERVICE, ...
@@ -170,7 +170,7 @@ public class Callback {
 }
 ```
 
-Then we need to define `@FunctionalInterface` and `@ServicePoint`:
+Then we need to define `@ServicePoint` with one functional method:
 ```java
 @ServicePoint("callbackServicePoint")
 @FunctionalInterface
@@ -179,7 +179,7 @@ public interface CallbackHandler {
 }
 ```
 
-After that we send `@Signal` from our service:
+After that we can send `@Signal` from our service:
 ```java
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -198,7 +198,7 @@ public class PaymentServiceImpl implements PaymentService {
 }
 ```
 
-Finnally we can trigger payment and listen to callback `@Signal`:
+Finnally we can trigger our service and wait for the `@Signal`:
 ```java
 @Service
 public class OrderServiceImpl implements OrderService {
