@@ -3,7 +3,8 @@
 The goal of the orbitoo-toolkit is to enhance spring-boot with [OOP](https://en.wikipedia.org/wiki/Object-oriented_programming).
 The toolkit allows to work with entities as with objects: now they can contain both behavior and attributes.
 In order to achieve it the toolkit allows to bind services (behavior) with entities (state). Upon receiving the request,
-the toolkit selects the proper service based on the type of subject entity.
+the toolkit selects the proper service based on the type of subject entity. Additionally the toolkit has support
+of object tags and object signals (see bellow).
 
 The toolkit is working with [Spring-Boot 3.x](https://spring.io/) and [Java 17](https://openjdk.org/).
 
@@ -99,8 +100,8 @@ Fish doesn't make sound.
 
 ## Tags
 Sometimes we need to be able to customize the behavior based on the specific property of the entity
-(for example we have a special behavior for VIP customers). The allows to mark a such property using `Tag`
-and bind the domain service to specific `TaggedValue`. For example:
+(for example we need have a special behavior for VIP customers). The toolkit allows to mark a such
+property using `Tag` and bind the domain service to specific `TaggedValue`. For example:
 ```java
 public enum PokemonType {
     PIKACHU, CHARIZARD, ...
@@ -147,4 +148,79 @@ public class TestBean {
 Output:
 ```
 Pikachu: hello
+```
+
+## Signals
+The signal are important, when we are using composite activities. For example, we can have the entity,
+which represents customer's `Order`. At some point the customer need to perform `Payment`, which is
+another entity `Payment`, which was created based on `Order`. Once the customer finishes `Payment`
+we need to notify `Order`. A such situation can be solved using signals.
+
+First it is necessary to define DTO for signal. For example:
+```
+public enum CallbackTarget {
+    ORDER_SERVICE, LOAN_SERVICE, ...
+}
+
+public class Callback {
+    @Tag(name = "target")
+    private CallbackTarget target = null;
+
+    ...
+}
+```
+
+Then we need to define `@FunctionalInterface` and `@ServicePoint`:
+```
+@ServicePoint("callbackServicePoint")
+@FunctionalInterface
+public interface CallbackHandler {
+    public void process(@Subject Callback callback);
+}
+```
+
+After that we send `@Signal` from our service:
+```
+@Service
+public class PaymentServiceImpl implements PaymentService {
+    @Autowired
+    @ServicePointReference
+    private CallbackHandler callbackHandler;
+
+    @Async
+    @Override
+    public void createPayment(String paymentId, Callback callback) {
+        // simulate the payment
+        ...
+        // send the callback
+        callbackHandler.process(callback);
+    }
+}
+```
+
+Finnally we can trigger payment and listen to callback `@Signal`:
+```
+@Service
+public class OrderServiceImpl implements OrderService {
+    @Autowired
+    private PaymentService paymentService;
+
+    @Override
+    public void orderPayment(String orderId) {
+        log.info("orderPayment started: " + orderId);
+        paymentService.createPayment(orderId, new Callback(CallbackTarget.ORDER_SERVICE, orderId));
+    }
+
+    @Signal(signalPointName = "callbackServicePoint", signalContractClass = CallbackHandler.class, //
+            subjectClass = Callback.class, subjectTaggedValues = @TaggedValue(tag = "target", value = "ORDER_SERVICE"))
+    public void acceptOrderPaymentCallback(Callback callback) {
+        log.info("orderPayment finished: " + callback.getOrderId());
+    }
+}
+```
+
+Output:
+```
+orderPayment started: ORDER-2023-01-01-0001
+orderPayment finished: ORDER-2023-01-01-0001
 ```
