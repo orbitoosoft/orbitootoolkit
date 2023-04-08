@@ -7,6 +7,21 @@ the toolkit selects the proper service based on the type of subject entity.
 
 The toolkit is working with [Spring-Boot 3.x](https://spring.io/) and [Java 17](https://openjdk.org/).
 
+## Application Startup
+Before starting of spring-boot we need to:
+* add package `org.orbitootoolkit.core` to `@ComponentScan`
+* use `@ServicePointScan` to register `@ServicePoint` components
+```java
+@SpringBootApplication
+@ComponentScan(basePackages = { "org.orbitootoolkit.core", "org.orbitootoolkit.testapplication" })
+@ServicePointScan(basePackages = "org.orbitootoolkit.testapplication")
+public class TestApplication {
+    public static void main(String[] args) {
+        ApplicationContext applicationContext = SpringApplication.run(TestApplication.class, args);
+    }
+}
+```
+
 ## Introduction
 Let's start with classic OOP example.
 Let's suppose that in the database we are storing information about animals:
@@ -46,7 +61,6 @@ public class AnimalServiceImpl implements AnimalService {
     }
 }
 
-@Slf4j
 @Service
 @DomainService(servicePointName = "animalServicePoint", subjectClass = Dog.class)
 public class DogServiceImpl implements AnimalService {
@@ -84,3 +98,53 @@ Fish doesn't make sound.
 ```
 
 ## Tags
+Sometimes we need to be able to customize the behavior based on the specific property of the entity
+(for example we have a special behavior for VIP customers). The allows to mark a such property using `Tag`
+and bind the domain service to specific `TaggedValue`. For example:
+```java
+public enum PokemonType {
+    PIKACHU, CHARIZARD, ...
+}
+
+public class Pokemon extends Animal {
+    @Tag(name = "type")
+    private PokemonType type = null;
+
+    public Pokemon(PokemonType type) {
+        this.type = type;
+    }
+}
+```
+
+Then we can define a special service for a specific `PokemonType`. For example:
+```java
+@Service
+@DomainService(servicePointName = "animalServicePoint", subjectClass = Pokemon.class, //
+        subjectTaggedValues = @TaggedValue(tag = "type", value = "PIKACHU"))
+public class PikachuServiceImpl implements AnimalService {
+    @Override
+    public void makeSound(Animal animal) {
+        log.info("Pikachu: hello");
+    }
+}
+```
+
+Finally we can check our code:
+```java
+@Service
+public class TestBean {
+    @Autowired
+    @ServicePointReference
+    private AnimalService animalService;
+
+    public void test() {
+        Pokemon pikachu = new Pokemon(PokemonType.PIKACHU);
+        animalService.makeSound(pikachu);
+    }
+}
+```
+
+Output:
+```
+Pikachu: hello
+```
