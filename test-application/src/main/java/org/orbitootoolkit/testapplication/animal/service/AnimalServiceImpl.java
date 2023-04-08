@@ -32,6 +32,6 @@ import org.springframework.stereotype.Service;
 public class AnimalServiceImpl implements AnimalService {
     @Override
     public void makeSound(Animal animal) throws AnimalException {
-        throw new AnimalException("fish doesn't make sound");
+        throw new AnimalException(animal.getClass().getSimpleName() + " doesn't make sound.");
     }
 }
