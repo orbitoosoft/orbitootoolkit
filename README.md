@@ -198,7 +198,7 @@ public class PaymentServiceImpl implements PaymentService {
 }
 ```
 
-Finnally we can trigger our service and wait for the `@Signal`:
+Finally we can trigger our service and wait for `@Signal`:
 ```java
 @Service
 public class OrderServiceImpl implements OrderService {
