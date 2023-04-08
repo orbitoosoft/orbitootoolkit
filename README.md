@@ -156,8 +156,8 @@ which represents customer's `Order`. At some point the customer need to perform 
 another entity `Payment`, which was created based on `Order`. Once the customer finishes `Payment`
 we need to notify `Order`. A such situation can be solved using signals.
 
-First it is necessary to define DTO for signal. For example:
-```
+First it is necessary to define serializable DTO for signal. For example:
+```java
 public enum CallbackTarget {
     ORDER_SERVICE, LOAN_SERVICE, ...
 }
@@ -171,7 +171,7 @@ public class Callback {
 ```
 
 Then we need to define `@FunctionalInterface` and `@ServicePoint`:
-```
+```java
 @ServicePoint("callbackServicePoint")
 @FunctionalInterface
 public interface CallbackHandler {
@@ -180,7 +180,7 @@ public interface CallbackHandler {
 ```
 
 After that we send `@Signal` from our service:
-```
+```java
 @Service
 public class PaymentServiceImpl implements PaymentService {
     @Autowired
@@ -199,7 +199,7 @@ public class PaymentServiceImpl implements PaymentService {
 ```
 
 Finnally we can trigger payment and listen to callback `@Signal`:
-```
+```java
 @Service
 public class OrderServiceImpl implements OrderService {
     @Autowired
@@ -208,11 +208,14 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void orderPayment(String orderId) {
         log.info("orderPayment started: " + orderId);
-        paymentService.createPayment(orderId, new Callback(CallbackTarget.ORDER_SERVICE, orderId));
+        Callback callback = new Callback(CallbackTarget.ORDER_SERVICE, orderId);
+        paymentService.createPayment(orderId, callback);
     }
 
-    @Signal(signalPointName = "callbackServicePoint", signalContractClass = CallbackHandler.class, //
-            subjectClass = Callback.class, subjectTaggedValues = @TaggedValue(tag = "target", value = "ORDER_SERVICE"))
+    @Signal(signalPointName = "callbackServicePoint",
+            signalContractClass = CallbackHandler.class, //
+            subjectClass = Callback.class, //
+            subjectTaggedValues = @TaggedValue(tag = "target", value = "ORDER_SERVICE"))
     public void acceptOrderPaymentCallback(Callback callback) {
         log.info("orderPayment finished: " + callback.getOrderId());
     }
