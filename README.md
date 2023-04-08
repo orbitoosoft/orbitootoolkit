@@ -3,8 +3,9 @@
 The goal of the orbitoo-toolkit is to enhance spring-boot with [OOP](https://en.wikipedia.org/wiki/Object-oriented_programming).
 The toolkit allows to work with entities as with objects: now they can contain both behavior and attributes.
 In order to achieve it the toolkit allows to bind services (behavior) with entities (state). Upon receiving the request,
-the toolkit selects the proper service based on the type of subject entity. Additionally the toolkit has support
-of object tags and object signals (see bellow).
+the toolkit selects the proper service based on the type of subject entity (the type can be reprezented either
+by the java class or by the tagged property). Additionally the toolkit has support of signals, which allows
+to compose larger activities from smaller objects.
 
 The toolkit is working with [Spring-Boot 3.x](https://spring.io/) and [Java 17](https://openjdk.org/).
 
