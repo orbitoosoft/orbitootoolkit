@@ -23,7 +23,7 @@ package org.orbitootoolkit.testapplication.payment.service;
 
 import java.math.BigDecimal;
 
-import org.orbitootoolkit.core.api.Signal;
+import org.orbitootoolkit.core.api.SignalMapping;
 import org.orbitootoolkit.core.api.TaggedValue;
 import org.orbitootoolkit.testapplication.payment.api.CallbackHandler;
 import org.orbitootoolkit.testapplication.payment.api.LoanService;
@@ -47,7 +47,7 @@ public class LoanServiceImpl implements LoanService {
         paymentService.createPayment(loanId, new BigDecimal("4999.00"), new Callback(CallbackTarget.LOAN_SERVICE, loanId));
     }
 
-    @Signal(servicePointName = "callbackServicePoint", servicePointClass = CallbackHandler.class, //
+    @SignalMapping(servicePointName = "callbackServicePoint", servicePointClass = CallbackHandler.class, //
             subjectClass = Callback.class, subjectTaggedValues = @TaggedValue(tag = "target", value = "LOAN_SERVICE"))
     public void acceptLoanPaymentCallback(Callback callback) {
         log.info("loanPayment finished: " + callback);

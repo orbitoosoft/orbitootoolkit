@@ -31,5 +31,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 public @interface SignalMappings {
-    public Signal[] value();
+    public SignalMapping[] value();
 }

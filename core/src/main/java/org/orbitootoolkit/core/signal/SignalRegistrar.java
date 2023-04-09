@@ -29,7 +29,7 @@ import java.util.List;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.orbitootoolkit.core.api.Signal;
+import org.orbitootoolkit.core.api.SignalMapping;
 import org.orbitootoolkit.core.api.TaggedValue;
 import org.orbitootoolkit.core.service.TaggedValueDesc;
 import org.orbitootoolkit.core.util.ReflectionUtility;
@@ -52,7 +52,7 @@ import lombok.extern.slf4j.Slf4j;
 public class SignalRegistrar implements BeanDefinitionRegistryPostProcessor {
     private BeanNameGenerator nameGenerator = DefaultBeanNameGenerator.INSTANCE;
 
-    private static List<TaggedValueDesc> extractTaggedValueDescs(Signal signalMapping) {
+    private static List<TaggedValueDesc> extractTaggedValueDescs(SignalMapping signalMapping) {
         List<TaggedValueDesc> taggedValueDescs = new LinkedList<TaggedValueDesc>();
         TaggedValue[] taggedValues = ArrayUtils.nullToEmpty(signalMapping.subjectTaggedValues(), TaggedValue[].class);
         for (TaggedValue taggedValue : taggedValues) {
@@ -61,7 +61,7 @@ public class SignalRegistrar implements BeanDefinitionRegistryPostProcessor {
         return Collections.unmodifiableList(taggedValueDescs);
     }
 
-    private void registerSignalBean(BeanDefinitionRegistry registry, String serviceName, Class<?> serviceClass, Method serviceMethod, Signal signalMapping) {
+    private void registerSignalBean(BeanDefinitionRegistry registry, String serviceName, Class<?> serviceClass, Method serviceMethod, SignalMapping signalMapping) {
         MutablePropertyValues propertyValues = new MutablePropertyValues();
         propertyValues.addPropertyValue("signalPointName", signalMapping.servicePointName());
         propertyValues.addPropertyValue("signalContractClass", signalMapping.servicePointClass());
@@ -98,10 +98,10 @@ public class SignalRegistrar implements BeanDefinitionRegistryPostProcessor {
             throw new IllegalStateException(ex);
         }
         //
-        Method[] serviceMethods = ArrayUtils.nullToEmpty(MethodUtils.getMethodsWithAnnotation(serviceClass, Signal.class), Method[].class);
+        Method[] serviceMethods = ArrayUtils.nullToEmpty(MethodUtils.getMethodsWithAnnotation(serviceClass, SignalMapping.class), Method[].class);
         for (Method serviceMethod : serviceMethods) {
-            Signal[] signalMappings = ArrayUtils.nullToEmpty(serviceMethod.getAnnotationsByType(Signal.class), Signal[].class);
-            for (Signal signalMapping : signalMappings) {
+            SignalMapping[] signalMappings = ArrayUtils.nullToEmpty(serviceMethod.getAnnotationsByType(SignalMapping.class), SignalMapping[].class);
+            for (SignalMapping signalMapping : signalMappings) {
                 registerSignalBean(registry, serviceName, serviceClass, serviceMethod, signalMapping);
             }
         }

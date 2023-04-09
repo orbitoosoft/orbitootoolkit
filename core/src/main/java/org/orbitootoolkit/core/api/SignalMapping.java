@@ -32,7 +32,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Repeatable(SignalMappings.class)
-public @interface Signal {
+public @interface SignalMapping {
     public String servicePointName();
 
     public Class<?> servicePointClass();
