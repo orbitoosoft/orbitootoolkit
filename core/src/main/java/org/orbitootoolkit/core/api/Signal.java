@@ -31,7 +31,7 @@ import java.lang.annotation.Target;
 @Target({ ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Repeatable(Signals.class)
+@Repeatable(SignalMappings.class)
 public @interface Signal {
     public String servicePointName();
 
