@@ -199,7 +199,8 @@ public class PaymentServiceImpl implements PaymentService {
 }
 ```
 
-Finally we can invoke `PaymentService` from `OrderService` and wait for the callback:
+Finally we can invoke `PaymentService` from `OrderService` and wait for the callback,
+which will trigger the method annotated by `@SignalMapping`:
 ```java
 @Service
 public class OrderServiceImpl implements OrderService {
