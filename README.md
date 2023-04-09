@@ -121,7 +121,7 @@ public class Pokemon extends Animal {
 Then we can define a special service for a specific `PokemonType`. For example:
 ```java
 @Service
-@DomainService(servicePointName = "animalServicePoint", subjectClass = Pokemon.class, //
+@DomainService(servicePointName = "animalServicePoint", subjectClass = Pokemon.class,
         subjectTaggedValues = @TaggedValue(tag = "type", value = "PIKACHU"))
 public class PikachuServiceImpl implements AnimalService {
     @Override
@@ -213,9 +213,9 @@ public class OrderServiceImpl implements OrderService {
         paymentService.createPayment(orderId, callback);
     }
 
-    @Signal(signalPointName = "callbackServicePoint",
-            signalContractClass = CallbackHandler.class, //
-            subjectClass = Callback.class, //
+    @Signal(servicePointName = "callbackServicePoint",
+            servicePointClass = CallbackHandler.class,
+            subjectClass = Callback.class,
             subjectTaggedValues = @TaggedValue(tag = "target", value = "ORDER_SERVICE"))
     public void acceptOrderPaymentCallback(Callback callback) {
         log.info("orderPayment finished: " + callback.getOrderId());
