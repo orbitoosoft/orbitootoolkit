@@ -52,21 +52,21 @@ import lombok.extern.slf4j.Slf4j;
 public class SignalRegistrar implements BeanDefinitionRegistryPostProcessor {
     private BeanNameGenerator nameGenerator = DefaultBeanNameGenerator.INSTANCE;
 
-    private static List<TaggedValueDesc> extractTaggedValueDescs(Signal signal) {
+    private static List<TaggedValueDesc> extractTaggedValueDescs(Signal signalMapping) {
         List<TaggedValueDesc> taggedValueDescs = new LinkedList<TaggedValueDesc>();
-        TaggedValue[] taggedValues = ArrayUtils.nullToEmpty(signal.subjectTaggedValues(), TaggedValue[].class);
+        TaggedValue[] taggedValues = ArrayUtils.nullToEmpty(signalMapping.subjectTaggedValues(), TaggedValue[].class);
         for (TaggedValue taggedValue : taggedValues) {
             taggedValueDescs.add(new TaggedValueDesc(taggedValue.tag(), taggedValue.value()));
         }
         return Collections.unmodifiableList(taggedValueDescs);
     }
 
-    private void registerSignalBean(BeanDefinitionRegistry registry, String serviceName, Class<?> serviceClass, Method serviceMethod, Signal signal) {
+    private void registerSignalBean(BeanDefinitionRegistry registry, String serviceName, Class<?> serviceClass, Method serviceMethod, Signal signalMapping) {
         MutablePropertyValues propertyValues = new MutablePropertyValues();
-        propertyValues.addPropertyValue("signalPointName", signal.servicePointName());
-        propertyValues.addPropertyValue("signalContractClass", signal.servicePointClass());
-        propertyValues.addPropertyValue("subjectClass", signal.subjectClass());
-        propertyValues.addPropertyValue("subjectTaggedValues", extractTaggedValueDescs(signal));
+        propertyValues.addPropertyValue("signalPointName", signalMapping.servicePointName());
+        propertyValues.addPropertyValue("signalContractClass", signalMapping.servicePointClass());
+        propertyValues.addPropertyValue("subjectClass", signalMapping.subjectClass());
+        propertyValues.addPropertyValue("subjectTaggedValues", extractTaggedValueDescs(signalMapping));
         //
         propertyValues.addPropertyValue("serviceName", serviceName);
         propertyValues.addPropertyValue("serviceClass", serviceClass);
@@ -100,9 +100,9 @@ public class SignalRegistrar implements BeanDefinitionRegistryPostProcessor {
         //
         Method[] serviceMethods = ArrayUtils.nullToEmpty(MethodUtils.getMethodsWithAnnotation(serviceClass, Signal.class), Method[].class);
         for (Method serviceMethod : serviceMethods) {
-            Signal[] signals = ArrayUtils.nullToEmpty(serviceMethod.getAnnotationsByType(Signal.class), Signal[].class);
-            for (Signal signal : signals) {
-                registerSignalBean(registry, serviceName, serviceClass, serviceMethod, signal);
+            Signal[] signalMappings = ArrayUtils.nullToEmpty(serviceMethod.getAnnotationsByType(Signal.class), Signal[].class);
+            for (Signal signalMapping : signalMappings) {
+                registerSignalBean(registry, serviceName, serviceClass, serviceMethod, signalMapping);
             }
         }
     }
