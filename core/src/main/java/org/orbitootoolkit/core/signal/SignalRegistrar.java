@@ -63,8 +63,8 @@ public class SignalRegistrar implements BeanDefinitionRegistryPostProcessor {
 
     private void registerSignalBean(BeanDefinitionRegistry registry, String serviceName, Class<?> serviceClass, Method serviceMethod, Signal signal) {
         MutablePropertyValues propertyValues = new MutablePropertyValues();
-        propertyValues.addPropertyValue("signalPointName", signal.signalPointName());
-        propertyValues.addPropertyValue("signalContractClass", signal.signalContractClass());
+        propertyValues.addPropertyValue("signalPointName", signal.servicePointName());
+        propertyValues.addPropertyValue("signalContractClass", signal.servicePointClass());
         propertyValues.addPropertyValue("subjectClass", signal.subjectClass());
         propertyValues.addPropertyValue("subjectTaggedValues", extractTaggedValueDescs(signal));
         //

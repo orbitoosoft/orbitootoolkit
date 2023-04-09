@@ -47,7 +47,7 @@ public class LoanServiceImpl implements LoanService {
         paymentService.createPayment(loanId, new BigDecimal("4999.00"), new Callback(CallbackTarget.LOAN_SERVICE, loanId));
     }
 
-    @Signal(signalPointName = "callbackServicePoint", signalContractClass = CallbackHandler.class, //
+    @Signal(servicePointName = "callbackServicePoint", servicePointClass = CallbackHandler.class, //
             subjectClass = Callback.class, subjectTaggedValues = @TaggedValue(tag = "target", value = "LOAN_SERVICE"))
     public void acceptLoanPaymentCallback(Callback callback) {
         log.info("loanPayment finished: " + callback);

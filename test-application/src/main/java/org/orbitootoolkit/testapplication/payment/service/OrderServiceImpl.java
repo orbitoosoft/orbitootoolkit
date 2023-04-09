@@ -47,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
         paymentService.createPayment(orderId, new BigDecimal("10000.00"), new Callback(CallbackTarget.ORDER_SERVICE, orderId));
     }
 
-    @Signal(signalPointName = "callbackServicePoint", signalContractClass = CallbackHandler.class, //
+    @Signal(servicePointName = "callbackServicePoint", servicePointClass = CallbackHandler.class, //
             subjectClass = Callback.class, subjectTaggedValues = @TaggedValue(tag = "target", value = "ORDER_SERVICE"))
     public void acceptOrderPaymentCallback(Callback callback) {
         log.info("orderPayment finished: " + callback);

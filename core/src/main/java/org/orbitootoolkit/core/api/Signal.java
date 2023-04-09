@@ -33,9 +33,9 @@ import java.lang.annotation.Target;
 @Documented
 @Repeatable(Signals.class)
 public @interface Signal {
-    public String signalPointName();
+    public String servicePointName();
 
-    public Class<?> signalContractClass();
+    public Class<?> servicePointClass();
 
     public Class<?> subjectClass();
 
