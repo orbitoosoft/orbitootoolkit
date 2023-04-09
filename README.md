@@ -180,7 +180,7 @@ public interface CallbackHandler {
 }
 ```
 
-After that we can send `@Signal` from our service:
+After that we can send the callback from our `PaymentService`:
 ```java
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -199,7 +199,7 @@ public class PaymentServiceImpl implements PaymentService {
 }
 ```
 
-Finally we can trigger our service and wait for `@Signal`:
+Finally we can invoke `PaymentService` from `OrderService` and wait for the callback:
 ```java
 @Service
 public class OrderServiceImpl implements OrderService {
@@ -213,7 +213,7 @@ public class OrderServiceImpl implements OrderService {
         paymentService.createPayment(orderId, callback);
     }
 
-    @Signal(servicePointName = "callbackServicePoint",
+    @SignalMapping(servicePointName = "callbackServicePoint",
             servicePointClass = CallbackHandler.class,
             subjectClass = Callback.class,
             subjectTaggedValues = @TaggedValue(tag = "target", value = "ORDER_SERVICE"))
