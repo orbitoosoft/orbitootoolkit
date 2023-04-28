@@ -40,4 +40,13 @@ public class Property {
     private String value = null;
 
     private int priority = 0;
+
+    //
+
+    public Property(String name, String value) {
+        this.declaringClass = Void.class;
+        this.name = name;
+        this.value = value;
+        this.priority = 0;
+    }
 }

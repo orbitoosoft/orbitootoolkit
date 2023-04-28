@@ -57,7 +57,7 @@ public class DomainServiceKey {
         Set<Property> subjectProperties;
         if (!CollectionUtils.isEmpty(domainServiceDesc.getSubjectTaggedValues())) {
             subjectProperties = domainServiceDesc.getSubjectTaggedValues().stream().filter(Objects::nonNull) //
-                    .map((taggedValue) -> new Property(Void.class, taggedValue.getTag(), taggedValue.getValue())) //
+                    .map((taggedValue) -> new Property(taggedValue.getTag(), taggedValue.getValue())) //
                     .collect(Collectors.toUnmodifiableSet());
         } else {
             subjectProperties = Collections.emptySet();
