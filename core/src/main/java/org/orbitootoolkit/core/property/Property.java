@@ -38,4 +38,6 @@ public class Property {
 
     @EqualsAndHashCode.Include
     private String value = null;
+
+    private int priority = 0;
 }

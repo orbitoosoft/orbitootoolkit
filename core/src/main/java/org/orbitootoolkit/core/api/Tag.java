@@ -32,4 +32,6 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Tag {
     public String name();
+
+    public int priority() default 0;
 }

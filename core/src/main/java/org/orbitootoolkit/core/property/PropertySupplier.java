@@ -40,6 +40,7 @@ public class PropertySupplier {
     private Class<?> declaringClass = null;
     private String propertyName = null;
     private MethodHandle methodHandle = null;
+    private int priority = 0;
 
     //
 
@@ -71,6 +72,7 @@ public class PropertySupplier {
         //
         this.declaringClass = field.getDeclaringClass();
         this.propertyName = field.getAnnotation(Tag.class).name();
+        this.priority = field.getAnnotation(Tag.class).priority();
         //
         if (!field.trySetAccessible()) {
             throw new IllegalStateException("Cannot access: " + ReflectionUtility.getSimpleName(field));
@@ -90,6 +92,7 @@ public class PropertySupplier {
         //
         this.declaringClass = method.getDeclaringClass();
         this.propertyName = method.getAnnotation(Tag.class).name();
+        this.priority = method.getAnnotation(Tag.class).priority();
         //
         if (!method.trySetAccessible()) {
             throw new IllegalStateException("Cannot access: " + ReflectionUtility.getSimpleName(method));
@@ -104,19 +107,19 @@ public class PropertySupplier {
 
     //
 
-    private static void addPropertyTo(Collection<Property> properties, Class<?> clazz, String name, Object value) throws PropertySupplierException {
+    private static void addPropertyTo(Collection<Property> properties, Class<?> clazz, String name, Object value, int priority) throws PropertySupplierException {
         if (value == null) {
             // DO NOTHING
         } else if (value instanceof String) {
-            properties.add(new Property(clazz, name, (String) value));
+            properties.add(new Property(clazz, name, (String) value, priority));
         } else if (value instanceof Character) {
-            properties.add(new Property(clazz, name, ((Character) value).toString()));
+            properties.add(new Property(clazz, name, ((Character) value).toString(), priority));
         } else if (value instanceof Number) {
-            properties.add(new Property(clazz, name, ((Number) value).toString()));
+            properties.add(new Property(clazz, name, ((Number) value).toString(), priority));
         } else if (value instanceof Boolean) {
-            properties.add(new Property(clazz, name, ((Boolean) value).toString()));
+            properties.add(new Property(clazz, name, ((Boolean) value).toString(), priority));
         } else if (value instanceof Enum) {
-            properties.add(new Property(clazz, name, ((Enum<?>) value).name()));
+            properties.add(new Property(clazz, name, ((Enum<?>) value).name(), priority));
         } else if (value instanceof Map) {
             Map<?, ?> map = (Map<?, ?>) value;
             for (Map.Entry<?, ?> entry : map.entrySet()) {
@@ -124,7 +127,7 @@ public class PropertySupplier {
                 Object childValue = entry.getValue();
                 //
                 if (StringUtils.isNotEmpty(childName)) {
-                    addPropertyTo(properties, clazz, name + "." + childName, childValue);
+                    addPropertyTo(properties, clazz, name + "." + childName, childValue, priority);
                 }
             }
         } else {
@@ -140,6 +143,6 @@ public class PropertySupplier {
             throw new IllegalStateException(MESSAGE_UNEXPECTED_EXCEPTION, ex);
         }
         //
-        addPropertyTo(properties, declaringClass, propertyName, value);
+        addPropertyTo(properties, declaringClass, propertyName, value, priority);
     }
 }
