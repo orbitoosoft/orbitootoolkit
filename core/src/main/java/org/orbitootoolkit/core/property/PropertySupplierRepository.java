@@ -24,6 +24,7 @@ package org.orbitootoolkit.core.property;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -53,8 +54,6 @@ public class PropertySupplierRepository {
         log.debug("createPropertySuppliers started: " + subjectClass.getSimpleName());
         List<PropertySupplier> propertySuppliers = new LinkedList<PropertySupplier>();
         //
-        propertySuppliers.addAll(getPropertySuppliers(subjectClass.getSuperclass()));
-        //
         Field[] taggedFields = FieldUtils.getFieldsWithAnnotation(subjectClass, Tag.class);
         for (Field taggedField : taggedFields) {
             if (taggedField.getDeclaringClass().equals(subjectClass)) {
@@ -74,6 +73,9 @@ public class PropertySupplierRepository {
                 log.warn("Cannot create propertySupplier from: " + ReflectionUtility.getSimpleName(taggedMethod));
             }
         }
+        //
+        Collections.sort(propertySuppliers, Comparator.comparing(PropertySupplier::getPriority));
+        propertySuppliers.addAll(getPropertySuppliers(subjectClass.getSuperclass()));
         //
         log.debug("createPropertySuppliers finished: " + subjectClass.getSimpleName());
         return Collections.unmodifiableList(propertySuppliers);
