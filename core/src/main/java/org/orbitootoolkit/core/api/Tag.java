@@ -32,7 +32,4 @@ import java.lang.annotation.Target;
 @Documented
 public @interface Tag {
     public String name();
-
-    // TODO
-    public boolean includedByDefault() default true;
 }

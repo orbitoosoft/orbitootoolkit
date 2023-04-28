@@ -37,10 +37,4 @@ import org.springframework.stereotype.Component;
 public @interface ServicePoint {
     @AliasFor(annotation = Component.class)
     public String value() default "";
-
-    // TODO
-    public Tag[] includedTags() default {};
-
-    // TODO
-    public Tag[] excludedTags() default {};
 }
