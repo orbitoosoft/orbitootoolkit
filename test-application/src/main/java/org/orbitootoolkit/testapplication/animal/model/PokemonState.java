@@ -21,25 +21,6 @@
  */
 package org.orbitootoolkit.testapplication.animal.model;
 
-import org.orbitootoolkit.core.api.Tag;
-
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
-
-@Getter
-@Setter
-@ToString
-public class Pokemon extends Animal {
-    @Tag(name = "type", priority = 1)
-    private PokemonType type = null;
-
-    @Tag(name = "state", priority = 0)
-    private PokemonState state = null;
-
-    public Pokemon(PokemonType type, PokemonState state) {
-        super(type.name());
-        this.type = type;
-        this.state = state;
-    }
+public enum PokemonState {
+    WILD, TRAINED
 }

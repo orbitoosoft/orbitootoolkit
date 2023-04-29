@@ -23,6 +23,7 @@ package org.orbitootoolkit.testapplication.animal.service;
 
 import org.orbitootoolkit.core.api.DomainService;
 import org.orbitootoolkit.core.api.TaggedValue;
+import org.orbitootoolkit.testapplication.animal.api.AnimalException;
 import org.orbitootoolkit.testapplication.animal.api.AnimalService;
 import org.orbitootoolkit.testapplication.animal.model.Animal;
 import org.orbitootoolkit.testapplication.animal.model.Pokemon;
@@ -33,10 +34,13 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @DomainService(servicePointName = "animalServicePoint", subjectClass = Pokemon.class, //
-        subjectTaggedValues = @TaggedValue(tag = "type", value = "PIKACHU"))
-public class PikachuServiceImpl implements AnimalService {
+        subjectTaggedValues = { //
+                @TaggedValue(tag = "type", value = "PIKACHU"), //
+                @TaggedValue(tag = "state", value = "TRAINED") //
+        })
+public class TrainedPikachuServiceImpl implements AnimalService {
     @Override
-    public void makeSound(Animal animal) {
-        log.info("pikachu [" + animal.getName() + "]: pika-pika");
+    public void makeSound(Animal animal) throws AnimalException {
+        log.info("pikachu [" + animal.getName() + "]: hello");
     }
 }

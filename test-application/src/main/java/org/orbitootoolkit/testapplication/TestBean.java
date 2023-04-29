@@ -29,6 +29,7 @@ import org.orbitootoolkit.testapplication.animal.model.Cat;
 import org.orbitootoolkit.testapplication.animal.model.Dog;
 import org.orbitootoolkit.testapplication.animal.model.Fish;
 import org.orbitootoolkit.testapplication.animal.model.Pokemon;
+import org.orbitootoolkit.testapplication.animal.model.PokemonState;
 import org.orbitootoolkit.testapplication.animal.model.PokemonType;
 import org.orbitootoolkit.testapplication.payment.api.LoanService;
 import org.orbitootoolkit.testapplication.payment.api.OrderService;
@@ -57,15 +58,17 @@ public class TestBean {
     private void testInheritance() {
         Dog dog = new Dog("Buddy");
         Cat cat = new Cat("Tigger");
-        Pokemon charizard = new Pokemon(PokemonType.CHARIZARD);
-        Pokemon pikachu = new Pokemon(PokemonType.PIKACHU);
+        Pokemon charizard = new Pokemon(PokemonType.CHARIZARD, PokemonState.WILD);
+        Pokemon wildPikachu = new Pokemon(PokemonType.PIKACHU, PokemonState.WILD);
+        Pokemon trainedPikachu = new Pokemon(PokemonType.PIKACHU, PokemonState.TRAINED);
         Fish fish = new Fish();
         //
         try {
             animalService.makeSound(dog);
             animalService.makeSound(cat);
             animalService.makeSound(charizard);
-            animalService.makeSound(pikachu);
+            animalService.makeSound(wildPikachu);
+            animalService.makeSound(trainedPikachu);
             animalService.makeSound(fish);
         } catch (AnimalException ex) {
             log.info(ex.getClass().getSimpleName() + ": " + ex.getMessage());
@@ -75,7 +78,8 @@ public class TestBean {
             animalServiceByName.makeSound(dog);
             animalServiceByName.makeSound(cat);
             animalServiceByName.makeSound(charizard);
-            animalServiceByName.makeSound(pikachu);
+            animalServiceByName.makeSound(wildPikachu);
+            animalService.makeSound(trainedPikachu);
             animalServiceByName.makeSound(fish);
         } catch (AnimalException ex) {
             log.info(ex.getClass().getSimpleName() + ": " + ex.getMessage());
