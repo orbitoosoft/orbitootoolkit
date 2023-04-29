@@ -21,12 +21,15 @@
  */
 package org.orbitootoolkit.core.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.collections4.ListUtils;
@@ -60,18 +63,41 @@ public class DomainServiceDescRepository {
         log.info("removed domainServiceDesc: " + domainServiceDesc);
     }
 
-    private static void filterSubjectProperties(Set<Property> subjectProperties, Class<?> subjectClass) {
-        if (subjectClass != null) {
-            Iterator<Property> iterator = subjectProperties.iterator();
-            while (iterator.hasNext()) {
-                Property subjectProperty = iterator.next();
-                if (!subjectProperty.getDeclaringClass().isAssignableFrom(subjectClass)) {
-                    iterator.remove();
+    private static Set<Property> filterSubjectProperties(List<Property> subjectPropertiesAsList, Class<?> subjectClass) {
+        HashMap<Property, Property> subjectPropertiesAsMap = new HashMap<Property, Property>();
+        subjectPropertiesAsList = ListUtils.emptyIfNull(subjectPropertiesAsList);
+        //
+        for (Property newProperty : subjectPropertiesAsList) {
+            if (newProperty.getDeclaringClass().isAssignableFrom(subjectClass)) {
+                if (subjectPropertiesAsMap.containsKey(newProperty)) {
+                    Property oldProperty = subjectPropertiesAsMap.get(newProperty);
+                    if (newProperty.getDeclaringClass().isAssignableFrom(oldProperty.getDeclaringClass())) {
+                        subjectPropertiesAsMap.put(oldProperty, newProperty);
+                    }
+                } else {
+                    subjectPropertiesAsMap.put(newProperty, newProperty);
                 }
             }
-        } else {
-            subjectProperties.clear();
         }
+        //
+        return new HashSet<Property>(subjectPropertiesAsMap.values());
+    }
+
+    private static SortedSet<DomainServiceKeyBuilder> createKeyBuilders(String servicePointName, Class<?> subjectClass, Set<Property> subjectProperties) {
+        List<DomainServiceKeyBuilder> keyBuilderAsList = new ArrayList<DomainServiceKeyBuilder>();
+        //
+        while (subjectClass != null) {
+            keyBuilderAsList.add(new DomainServiceKeyBuilder(servicePointName, subjectClass));
+            subjectClass = subjectClass.getSuperclass();
+        }
+        //
+        for (Property property : subjectProperties) {
+            keyBuilderAsList.add(new DomainServiceKeyBuilder(servicePointName, property.getDeclaringClass(), property.getPriority()));
+        }
+        //
+        TreeSet<DomainServiceKeyBuilder> keyBuildersAsSet = new TreeSet<DomainServiceKeyBuilder>(DomainServiceKeyBuilder.COMPARATOR.reversed());
+        keyBuildersAsSet.addAll(keyBuilderAsList);
+        return keyBuildersAsSet;
     }
 
     public DomainServiceDesc findDomainServiceDesc(String servicePointName, Object subject) {
@@ -79,39 +105,13 @@ public class DomainServiceDescRepository {
         Objects.requireNonNull(subject);
         log.debug("findDomainServiceDesc started: " + servicePointName);
         //
-        Map<Property, Property> subjectPropertiesMap = new HashMap<Property, Property>();
-        ListUtils.emptyIfNull(propertySupplierRepository.getProperties(subject)).stream() //
-                .filter(Objects::nonNull).forEach((newProperty) -> {
-                    if (subjectPropertiesMap.containsKey(newProperty)) {
-                        Property oldProperty = subjectPropertiesMap.get(newProperty);
-                        if (newProperty.getDeclaringClass().isAssignableFrom(oldProperty.getDeclaringClass())) {
-                            subjectPropertiesMap.put(oldProperty, newProperty);
-                        }
-                    } else {
-                        subjectPropertiesMap.put(newProperty, newProperty);
-                    }
-                });
-        Set<Property> subjectProperties = new HashSet<Property>(subjectPropertiesMap.values());
-        //
         Class<?> subjectClass = subject.getClass();
-        filterSubjectProperties(subjectProperties, subjectClass);
-        while (subjectClass != null) {
-            DomainServiceKey key;
-            DomainServiceDesc domainServiceDesc;
-            //
-            key = new DomainServiceKey(servicePointName, subjectClass, subjectProperties);
-            domainServiceDesc = domainServiceMap.get(key);
-            if (domainServiceDesc != null) {
-                log.debug("findDomainServiceDesc finished: " + domainServiceDesc);
-                return domainServiceDesc;
-            }
-            //
-            Class<?> previousSubjectClass = subjectClass;
-            subjectClass = subjectClass.getSuperclass();
-            filterSubjectProperties(subjectProperties, subjectClass);
-            //
-            key = new DomainServiceKey(servicePointName, previousSubjectClass, subjectProperties);
-            domainServiceDesc = domainServiceMap.get(key);
+        Set<Property> subjectProperties = filterSubjectProperties(propertySupplierRepository.getProperties(subject), subjectClass);
+        Set<DomainServiceKeyBuilder> keyBuilders = createKeyBuilders(servicePointName, subjectClass, subjectProperties);
+        //
+        for (DomainServiceKeyBuilder keyBuilder : keyBuilders) {
+            DomainServiceKey key = keyBuilder.filterAndBuild(subjectProperties);
+            DomainServiceDesc domainServiceDesc = domainServiceMap.get(key);
             if (domainServiceDesc != null) {
                 log.debug("findDomainServiceDesc finished: " + domainServiceDesc);
                 return domainServiceDesc;
