@@ -21,10 +21,6 @@
  */
 package org.orbitootoolkit.core.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -32,7 +28,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.collections4.ListUtils;
 import org.orbitootoolkit.core.property.Property;
 import org.orbitootoolkit.core.property.PropertySupplierRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,41 +58,19 @@ public class DomainServiceDescRepository {
         log.info("removed domainServiceDesc: " + domainServiceDesc);
     }
 
-    private static Set<Property> filterSubjectProperties(List<Property> subjectPropertiesAsList, Class<?> subjectClass) {
-        HashMap<Property, Property> subjectPropertiesAsMap = new HashMap<Property, Property>();
-        subjectPropertiesAsList = ListUtils.emptyIfNull(subjectPropertiesAsList);
+    private static SortedSet<DomainServiceKeyBuilder> createKeyBuilders(String servicePointName, Object subject, Set<Property> subjectProperties) {
+        TreeSet<DomainServiceKeyBuilder> keyBuilders = new TreeSet<DomainServiceKeyBuilder>(DomainServiceKeyBuilder.COMPARATOR.reversed());
         //
-        for (Property newProperty : subjectPropertiesAsList) {
-            if (newProperty.getDeclaringClass().isAssignableFrom(subjectClass)) {
-                if (subjectPropertiesAsMap.containsKey(newProperty)) {
-                    Property oldProperty = subjectPropertiesAsMap.get(newProperty);
-                    if (newProperty.getDeclaringClass().isAssignableFrom(oldProperty.getDeclaringClass())) {
-                        subjectPropertiesAsMap.put(oldProperty, newProperty);
-                    }
-                } else {
-                    subjectPropertiesAsMap.put(newProperty, newProperty);
-                }
-            }
-        }
-        //
-        return new HashSet<Property>(subjectPropertiesAsMap.values());
-    }
-
-    private static SortedSet<DomainServiceKeyBuilder> createKeyBuilders(String servicePointName, Class<?> subjectClass, Set<Property> subjectProperties) {
-        List<DomainServiceKeyBuilder> keyBuilderAsList = new ArrayList<DomainServiceKeyBuilder>();
-        //
+        Class<?> subjectClass = subject.getClass();
         while (subjectClass != null) {
-            keyBuilderAsList.add(new DomainServiceKeyBuilder(servicePointName, subjectClass));
+            keyBuilders.add(new DomainServiceKeyBuilder(servicePointName, subjectClass));
             subjectClass = subjectClass.getSuperclass();
         }
-        //
-        for (Property property : subjectProperties) {
-            keyBuilderAsList.add(new DomainServiceKeyBuilder(servicePointName, property.getDeclaringClass(), property.getPriority()));
+        for (Property subjectProperty : subjectProperties) {
+            keyBuilders.add(new DomainServiceKeyBuilder(servicePointName, subjectProperty.getDeclaringClass(), subjectProperty.getPriority()));
         }
         //
-        TreeSet<DomainServiceKeyBuilder> keyBuildersAsSet = new TreeSet<DomainServiceKeyBuilder>(DomainServiceKeyBuilder.COMPARATOR.reversed());
-        keyBuildersAsSet.addAll(keyBuilderAsList);
-        return keyBuildersAsSet;
+        return keyBuilders;
     }
 
     public DomainServiceDesc findDomainServiceDesc(String servicePointName, Object subject) {
@@ -105,9 +78,8 @@ public class DomainServiceDescRepository {
         Objects.requireNonNull(subject);
         log.debug("findDomainServiceDesc started: " + servicePointName);
         //
-        Class<?> subjectClass = subject.getClass();
-        Set<Property> subjectProperties = filterSubjectProperties(propertySupplierRepository.getProperties(subject), subjectClass);
-        Set<DomainServiceKeyBuilder> keyBuilders = createKeyBuilders(servicePointName, subjectClass, subjectProperties);
+        Set<Property> subjectProperties = propertySupplierRepository.getProperties(subject);
+        Set<DomainServiceKeyBuilder> keyBuilders = createKeyBuilders(servicePointName, subject, subjectProperties);
         //
         for (DomainServiceKeyBuilder keyBuilder : keyBuilders) {
             DomainServiceKey key = keyBuilder.filterAndBuild(subjectProperties);

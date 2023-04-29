@@ -25,10 +25,13 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.lang3.reflect.FieldUtils;
@@ -96,21 +99,34 @@ public class PropertySupplierRepository {
 
     //
 
-    public List<Property> getProperties(Object subject) {
+    public Set<Property> getProperties(Object subject) {
         Objects.requireNonNull(subject);
         log.debug("getProperties started: " + subject.getClass().getSimpleName());
-        List<Property> properties = new LinkedList<Property>();
+        List<Property> propertiesAsList = new LinkedList<Property>();
         //
         List<PropertySupplier> propertySuppliers = getPropertySuppliers(subject.getClass());
         for (PropertySupplier propertySupplier : propertySuppliers) {
             try {
-                propertySupplier.extractPropertiesTo(properties, subject);
+                propertySupplier.extractPropertiesTo(propertiesAsList, subject);
             } catch (PropertySupplierException ex) {
                 throw new IllegalStateException("Cannot obtain properties from: " + subject.getClass().getSimpleName(), ex);
             }
         }
         //
-        log.debug("getProperties finished: " + properties.size());
-        return Collections.unmodifiableList(properties);
+        Map<Property, Property> propertiesAsMap = new HashMap<Property, Property>();
+        for (Property newProperty : propertiesAsList) {
+            if (propertiesAsMap.containsKey(newProperty)) {
+                Property oldProperty = propertiesAsMap.get(newProperty);
+                if (newProperty.canReplace(oldProperty)) {
+                    propertiesAsMap.put(oldProperty, newProperty);
+                }
+            } else {
+                propertiesAsMap.put(newProperty, newProperty);
+            }
+        }
+        //
+        Set<Property> propertiesAsSet = new HashSet<>(propertiesAsMap.values());
+        log.debug("getProperties finished: " + propertiesAsSet.size());
+        return propertiesAsSet;
     }
 }

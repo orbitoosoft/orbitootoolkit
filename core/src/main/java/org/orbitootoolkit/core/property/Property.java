@@ -21,6 +21,8 @@
  */
 package org.orbitootoolkit.core.property;
 
+import java.util.Objects;
+
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -48,5 +50,18 @@ public class Property {
         this.name = name;
         this.value = value;
         this.priority = 0;
+    }
+
+    //
+
+    public boolean canReplace(Property that) {
+        Objects.requireNonNull(that);
+        //
+        boolean isEqual = this.equals(that);
+        boolean isSameClass = this.getDeclaringClass().equals(that.getDeclaringClass());
+        boolean isParentClass = this.getDeclaringClass().isAssignableFrom(that.getDeclaringClass()) && !isSameClass;
+        boolean hasHigherPriority = (this.getPriority() > that.getPriority());
+        //
+        return isEqual && (isParentClass || (isSameClass && hasHigherPriority));
     }
 }
