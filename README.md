@@ -156,7 +156,7 @@ As described above the toolkit allows to dispatch the request to the proper serv
 and also based on the state of the subject (property annotated by `@Tag`). Below you can find the description
 of the algorithm, which is used by the toolkit in order to find the proper service.
 
-0. Let's try to **findService**, which is assigned to *subjectClass* and to following tagged values *{ts-1..ts-m, tx-1..tx-n}*,
+0. Let's try to **findService**, which is assigned to *subjectClass* and to tagged values *{ts-1..ts-m, tx-1..tx-n}*,
    where tags *ts-1..ts-m* are declared by *subjectClass* with priority *1..m* and tags *tx-1..tx-n* are declared by some parent
    classes of *subjectClass*.
 1. In the beginning the dispatcher will try to obtain a service from the context based on *subjectClass* and all tagged values:
@@ -168,8 +168,8 @@ of the algorithm, which is used by the toolkit in order to find the proper servi
    - `getService(subjectClass, {ts-3..ts-m, tx-1..tx-n})`
    - `...`
    - `getService(subjectClass, {tx-1..tx-n})`
-3. If the service was found, the method will return it to the client.
-4. Otherwise the dispatcher will try to **findService** for superclass of *subjectClass* and for the rest of tagged values *{tx-1..tx-n}*:
+3. If the service was found, the method will return the service to the client.
+4. Otherwise the dispatcher will try to **findService** for superclass of *subjectClass* and for tagged values *{tx-1..tx-n}*:
    - `findService(subjectClass.getSuperclass(), {tx-1..tx-n})` (see step **0.**)
 
 ## Signals
