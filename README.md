@@ -153,23 +153,23 @@ Pikachu: hello
 
 ## Dispatch algorithm
 As described above the toolkit allows to dispatch the request to the proper service based on the class of the subject
-and also based on the state of the subject (property annotated by `@Tag`). Bellow you can find the description of the algorithm,
-which is used by the toolkit in order to find the proper service.
+and also based on the state of the subject (property annotated by `@Tag`). Below you can find the description
+of the algorithm, which is used by the toolkit in order to find the proper service.
 
-0. Let's try to find a service, which is assigned to `Subject` class and to following tagged values `{ts-1..ts-m, tx-1..tx-n}`,
-   where tags `ts-1..ts-m` are declared by `Subject` class with priority `1..m` and tags `tx-1..tx-n` are declared
-   by `Subject` parent classes.
-1. In the beginning the dispatcher will try to find a service based on `Subject` class and all tagged values:
-   - `findService(Subject.class, {ts-1..ts-m, tx-1..tx-n})` 
-2. If the nothing was found, then the dispatcher will remove the tagged value declared by `Subject` class with lowest priority
-   and it will perform another search. This step will be repeated, until the set of tagged values will not contain any tagged
-   value declared by `Subject` class:
-   - `findService(Subject.class, {ts-2..ts-m, tx-1..tx-n})`
-   - `findService(Subject.class, {ts-3..ts-m, tx-1..tx-n})`
+0. Let's try to **findService**, which is assigned to *subjectClass* and to following tagged values *{ts-1..ts-m, tx-1..tx-n}*,
+   where tags *ts-1..ts-m* are declared by *subjectClass* with priority *1..m* and tags *tx-1..tx-n* are declared by some parent
+   classes of *subjectClass*.
+1. In the beginning the dispatcher will try to obtain a service from the context based on *subjectClass* and all tagged values:
+   - `getService(subjectClass, {ts-1..ts-m, tx-1..tx-n})` 
+2. If the context was empty, then the dispatcher will remove the tagged value with the lowest priority declared by *subjectClass*
+   and it will again check the context. This step will be repeated, until the set of tagged values will not contain any tagged
+   value declared by *subjectClass*:
+   - `getService(subjectClass, {ts-2..ts-m, tx-1..tx-n})`
+   - `getService(subjectClass, {ts-3..ts-m, tx-1..tx-n})`
    - `...`
-   - `findService(Subject.class, {tx-1..tx-n})`
-3. At this point the dispatcher will try to find a service for `Subject` superclass and the rest of tagged values `{tx-1..tx-n}`
-   (goto step `0`).
+   - `getService(subjectClass, {tx-1..tx-n})`
+3. At this point the dispatcher will try to **findService** for superclass of *subjectClass* and the rest of tagged values `{tx-1..tx-n}`
+   - `findService(subjectClass.getSuperclass(), {tx-1..tx-n})` (see step **0.**)
 
 ## Signals
 The signal are important, when we need to compose the activity from smaller objects. For example:
