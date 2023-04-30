@@ -168,9 +168,8 @@ of the algorithm, which is used by the toolkit in order to find the proper servi
    - `getService(subjectClass, {ts-3..ts-m, tx-1..tx-n})`
    - `...`
    - `getService(subjectClass, {tx-1..tx-n})`
-3. The method will return the service, which was found in the context.
-4. If nothing was found, the dispatcher will **findService** for superclass of *subjectClass*
-   and for the rest of tagged values *{tx-1..tx-n}*:
+3. If the service was found, then finish the method.
+4. Otherwise the dispatcher will **findService** for the superclass of *subjectClass* and for tagged values *{tx-1..tx-n}*:
    - `findService(subjectClass.getSuperclass(), {tx-1..tx-n})` (see step **0.**)
 
 ## Signals
