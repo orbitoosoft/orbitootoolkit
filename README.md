@@ -160,10 +160,10 @@ of the algorithm, which is used by the toolkit in order to find the proper servi
    where tags *ts-1..ts-m* are declared by *subjectClass* with priority *1..m* and tags *tx-1..tx-n* are declared by some parent
    classes of *subjectClass*.
 1. In the beginning the dispatcher will try to obtain a service from the context based on *subjectClass* and all tagged values:
-   - `getService(subjectClass, {ts-1..ts-m, tx-1..tx-n})` 
+   - `getService(subjectClass, {ts-1..ts-m, tx-1..tx-n})`
 2. If the context was empty, then the dispatcher will remove the tagged value with the lowest priority declared by *subjectClass*
-   and it will again check the context. This step will be repeated, until the set of tagged values will not contain any tagged
-   value declared by *subjectClass*:
+   and it will again check the context. If context was again empty, this step will be repeated, until the set of tagged values
+   will not contain any tagged value declared by *subjectClass*:
    - `getService(subjectClass, {ts-2..ts-m, tx-1..tx-n})`
    - `getService(subjectClass, {ts-3..ts-m, tx-1..tx-n})`
    - `...`
