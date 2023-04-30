@@ -151,6 +151,26 @@ Output:
 Pikachu: hello
 ```
 
+## Dispatch algorithm
+As described above the toolkit allows to dispatch the request to the proper service based on the class and also
+based on the state of the subject (property annotated by `@Tag`). Bellow you can find the description of the algorithm
+used by the toolkit in order to find the proper service.
+
+Let's try to find service, which is assigned to `Subject` class and to following tagged values `{ts-1..ts-m, tx-1..tx-n}`,
+where tags `ts-1..ts-m` are declared by `Subject` class with priority `1..m` and tags `tx-1..tx-n` are declared
+by `Subject` parent classes.
+
+1] In the beginning the dispatcher will try to find service based on `Subject` class and all tagged values:
+  * `findService(Subject.class, {ts-1..ts-m, tx-1..tx-n})` 
+2] If the nothing was found, then the dispatcher will remove the tagged value declared by `Subject` class with lowest priority
+and it will perform another search. This step will be repeated, until the set of tagged values will not contain any tagged value
+declared by `Subject class`:
+  * `findService(Subject.class, {ts-2..ts-m, tx-1..tx-n})`
+  * `findService(Subject.class, {ts-3..ts-m, tx-1..tx-n})`
+  `...`
+  * `findService(Subject.class, {tx-1..tx-n})`
+3] At this point the dispatcher will try to find the service for `Subject` superclass and the rest of tagged values `{tx-1..tx-n}`.
+
 ## Signals
 The signal are important, when we need to compose the activity from smaller objects. For example:
 we can have the entity, which represents customer's `Order`. During processing of `Order` the customer
