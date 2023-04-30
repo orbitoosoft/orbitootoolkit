@@ -168,7 +168,7 @@ of the algorithm, which is used by the toolkit in order to find the proper servi
    - `getService(subjectClass, {ts-3..ts-m, tx-1..tx-n})`
    - `...`
    - `getService(subjectClass, {tx-1..tx-n})`
-3. At this point the dispatcher will try to **findService** for superclass of *subjectClass* and the rest of tagged values `{tx-1..tx-n}`
+3. At this point the dispatcher will try to **findService** for superclass of *subjectClass* and the rest of tagged values *{tx-1..tx-n}*
    - `findService(subjectClass.getSuperclass(), {tx-1..tx-n})` (see step **0.**)
 
 ## Signals
