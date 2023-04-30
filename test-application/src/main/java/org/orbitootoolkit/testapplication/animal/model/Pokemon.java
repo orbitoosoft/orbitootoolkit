@@ -38,7 +38,7 @@ public class Pokemon extends Animal {
     private PokemonState state = null;
 
     public Pokemon(PokemonType type, PokemonState state) {
-        super(type.name());
+        super(type.name() + ":" + state.name());
         this.type = type;
         this.state = state;
     }

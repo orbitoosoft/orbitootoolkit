@@ -145,8 +145,4 @@ public class PropertySupplier {
         //
         addPropertyTo(properties, declaringClass, propertyName, value, priority);
     }
-
-    public int getPriority() {
-        return priority;
-    }
 }

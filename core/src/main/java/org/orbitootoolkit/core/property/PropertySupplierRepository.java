@@ -24,7 +24,6 @@ package org.orbitootoolkit.core.property;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -77,7 +76,6 @@ public class PropertySupplierRepository {
             }
         }
         //
-        Collections.sort(propertySuppliers, Comparator.comparing(PropertySupplier::getPriority));
         propertySuppliers.addAll(getPropertySuppliers(subjectClass.getSuperclass()));
         //
         log.debug("createPropertySuppliers finished: " + subjectClass.getSimpleName());
