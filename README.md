@@ -161,15 +161,16 @@ of the algorithm, which is used by the toolkit in order to find the proper servi
    classes of *subjectClass*.
 1. In the beginning the dispatcher will try to obtain a service from the context based on *subjectClass* and all tagged values:
    - `getService(subjectClass, {ts-1..ts-m, tx-1..tx-n})`
-2. If the context was empty, then the dispatcher will remove the tagged value with the lowest priority declared by *subjectClass*
+2. If nothing was found, the dispatcher will remove the tagged value with the lowest priority declared by *subjectClass*
    and it will again check the context (this step will be repeated, until the set of tagged values will not contain any tagged value
    declared by *subjectClass*):
    - `getService(subjectClass, {ts-2..ts-m, tx-1..tx-n})`
    - `getService(subjectClass, {ts-3..ts-m, tx-1..tx-n})`
    - `...`
    - `getService(subjectClass, {tx-1..tx-n})`
-3. If the service was found, the method will return the service to the client.
-4. Otherwise the dispatcher will **findService** for superclass of *subjectClass* and for tagged values *{tx-1..tx-n}*:
+3. The method will return the service, which was found in the context.
+4. If nothing was found, the dispatcher will **findService** for superclass of *subjectClass*
+   and for the rest of tagged values *{tx-1..tx-n}*:
    - `findService(subjectClass.getSuperclass(), {tx-1..tx-n})` (see step **0.**)
 
 ## Signals
