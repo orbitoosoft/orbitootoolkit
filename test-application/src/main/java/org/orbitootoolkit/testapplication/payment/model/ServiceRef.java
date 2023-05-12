@@ -19,14 +19,20 @@
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * =========================LICENSE_END==================================
  */
-package org.orbitootoolkit.testapplication.payment.api;
+package org.orbitootoolkit.testapplication.payment.model;
 
-import org.orbitootoolkit.core.api.ServicePoint;
-import org.orbitootoolkit.core.api.Subject;
-import org.orbitootoolkit.testapplication.payment.model.Callback;
+import org.orbitootoolkit.core.api.Tag;
 
-@ServicePoint("callbackServicePoint")
-@FunctionalInterface
-public interface CallbackHandler {
-    public void process(@Subject Callback callback);
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+@AllArgsConstructor
+@Getter
+@Setter
+@ToString
+public class ServiceRef {
+    @Tag(name = "name")
+    private String name = null;
 }

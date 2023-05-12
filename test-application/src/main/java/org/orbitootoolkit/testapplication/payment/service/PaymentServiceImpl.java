@@ -22,11 +22,13 @@
 package org.orbitootoolkit.testapplication.payment.service;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 
+import org.apache.commons.lang3.ThreadUtils;
 import org.orbitootoolkit.core.api.ServicePointReference;
-import org.orbitootoolkit.testapplication.payment.api.CallbackHandler;
 import org.orbitootoolkit.testapplication.payment.api.PaymentService;
-import org.orbitootoolkit.testapplication.payment.model.Callback;
+import org.orbitootoolkit.testapplication.payment.api.PaymentServiceCallback;
+import org.orbitootoolkit.testapplication.payment.model.ServiceRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -38,20 +40,25 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentServiceImpl implements PaymentService {
     @Autowired
     @ServicePointReference
-    private CallbackHandler callbackHandler;
+    private PaymentServiceCallback paymentServiceCallback;
 
-    @Async
-    @Override
-    public void createPayment(String paymentId, BigDecimal amount, Callback callback) {
-        // simulate the payment
-        log.info("payment started [" + paymentId + ", " + amount + "]");
+    private static void sleep(Duration duration) {
         try {
-            Thread.sleep(5000);
+            ThreadUtils.sleep(duration);
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
         }
+    }
+
+    @Async
+    @Override
+    public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackService) {
+        // simulate the payment
+        log.info("payment started [" + paymentId + ", " + amount + "]");
+        sleep(Duration.ofSeconds(3));
         log.info("payment finished [" + paymentId + ", " + amount + "]");
         // send the callback
-        callbackHandler.process(callback);
+        sleep(Duration.ofSeconds(1));
+        paymentServiceCallback.paymentExecuted(paymentId, callbackService);
     }
 }

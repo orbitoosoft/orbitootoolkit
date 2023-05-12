@@ -23,14 +23,14 @@ package org.orbitootoolkit.testapplication.payment.service;
 
 import java.math.BigDecimal;
 
-import org.orbitootoolkit.core.api.SignalMapping;
+import org.orbitootoolkit.core.api.DomainService;
 import org.orbitootoolkit.core.api.TaggedValue;
-import org.orbitootoolkit.testapplication.payment.api.CallbackHandler;
 import org.orbitootoolkit.testapplication.payment.api.LoanService;
 import org.orbitootoolkit.testapplication.payment.api.PaymentService;
-import org.orbitootoolkit.testapplication.payment.model.Callback;
-import org.orbitootoolkit.testapplication.payment.model.CallbackTarget;
+import org.orbitootoolkit.testapplication.payment.api.PaymentServiceCallback;
+import org.orbitootoolkit.testapplication.payment.model.ServiceRef;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import lombok.extern.slf4j.Slf4j;
@@ -38,18 +38,21 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class LoanServiceImpl implements LoanService {
+    private static final String LOAN_SERVICE_NAME = "loanServiceImpl";
+
     @Autowired
     private PaymentService paymentService;
 
     @Override
     public void loanPayment(String loanId) {
         log.info("loanPayment started: " + loanId);
-        paymentService.createPayment(loanId, new BigDecimal("4999.00"), new Callback(CallbackTarget.LOAN_SERVICE, loanId));
+        paymentService.executePayment(loanId, new BigDecimal("100.00"), new ServiceRef(LOAN_SERVICE_NAME));
     }
 
-    @SignalMapping(servicePointName = "callbackServicePoint", servicePointClass = CallbackHandler.class, //
-            subjectClass = Callback.class, subjectTaggedValues = @TaggedValue(tag = "target", value = "LOAN_SERVICE"))
-    public void acceptLoanPaymentCallback(Callback callback) {
-        log.info("loanPayment finished: " + callback);
+    @Bean(name = LOAN_SERVICE_NAME + "_callback")
+    @DomainService(servicePointName = "paymentServiceCallback", subjectClass = ServiceRef.class, //
+            subjectTaggedValues = @TaggedValue(tag = "name", value = LOAN_SERVICE_NAME))
+    public PaymentServiceCallback getCallback() {
+        return (paymentId, targetServiceRef) -> log.info("loanPayment finished: " + paymentId);
     }
 }

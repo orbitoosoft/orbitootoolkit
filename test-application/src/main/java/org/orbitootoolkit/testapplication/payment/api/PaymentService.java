@@ -23,8 +23,8 @@ package org.orbitootoolkit.testapplication.payment.api;
 
 import java.math.BigDecimal;
 
-import org.orbitootoolkit.testapplication.payment.model.Callback;
+import org.orbitootoolkit.testapplication.payment.model.ServiceRef;
 
 public interface PaymentService {
-    public void createPayment(String paymentId, BigDecimal amount, Callback callback);
+    public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackServiceRef);
 }
