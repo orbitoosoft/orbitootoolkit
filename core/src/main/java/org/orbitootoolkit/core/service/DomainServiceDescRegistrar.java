@@ -26,6 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.orbitootoolkit.core.api.DomainService;
 import org.orbitootoolkit.core.api.TaggedValue;
@@ -39,7 +40,9 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProce
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
@@ -78,18 +81,31 @@ public class DomainServiceDescRegistrar implements BeanDefinitionRegistryPostPro
     }
 
     @SuppressWarnings("java:S6204")
+    private List<DomainService> getDomainServices(AnnotatedTypeMetadata metadata) {
+        MergedAnnotations mergedAnnotations = (metadata != null) ? metadata.getAnnotations() : null;
+        if ((mergedAnnotations != null) && mergedAnnotations.isDirectlyPresent(DomainService.class)) {
+            return mergedAnnotations.stream(DomainService.class) //
+                    .filter(MergedAnnotation::isDirectlyPresent) //
+                    .map(MergedAnnotation::synthesize) //
+                    .collect(Collectors.toUnmodifiableList());
+        } else {
+            return Collections.emptyList();
+        }
+    }
+
     private List<DomainService> getDomainServices(BeanDefinition beanDefinition) {
         if (beanDefinition instanceof AnnotatedBeanDefinition) {
-            MergedAnnotations mergedAnnotations = ((AnnotatedBeanDefinition) beanDefinition).getMetadata().getAnnotations();
-            if (mergedAnnotations.isDirectlyPresent(DomainService.class)) {
-                return mergedAnnotations.stream(DomainService.class) //
-                        .filter((mergedAnnotation) -> mergedAnnotation.isDirectlyPresent()) //
-                        .map((mergedAnnotation) -> mergedAnnotation.synthesize()) //
-                        .collect(Collectors.toUnmodifiableList());
+            AnnotatedBeanDefinition annotatedBeanDefinition = (AnnotatedBeanDefinition) beanDefinition;
+            //
+            List<DomainService> factoryMethodDomainServices = getDomainServices(annotatedBeanDefinition.getFactoryMethodMetadata());
+            if (CollectionUtils.isNotEmpty(factoryMethodDomainServices)) {
+                return factoryMethodDomainServices;
             }
+            //
+            return getDomainServices(annotatedBeanDefinition.getMetadata());
+        } else {
+            return Collections.emptyList();
         }
-        //
-        return Collections.emptyList();
     }
 
     @Override
