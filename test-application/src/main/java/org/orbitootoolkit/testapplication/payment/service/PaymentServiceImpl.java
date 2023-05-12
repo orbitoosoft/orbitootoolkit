@@ -52,13 +52,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Async
     @Override
-    public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackService) {
+    public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackServiceRef) {
         // simulate the payment
         log.info("payment started [" + paymentId + ", " + amount + "]");
         sleep(Duration.ofSeconds(3));
         log.info("payment finished [" + paymentId + ", " + amount + "]");
         // send the callback
         sleep(Duration.ofSeconds(1));
-        paymentServiceCallback.paymentExecuted(paymentId, callbackService);
+        paymentServiceCallback.paymentExecuted(paymentId, callbackServiceRef);
     }
 }

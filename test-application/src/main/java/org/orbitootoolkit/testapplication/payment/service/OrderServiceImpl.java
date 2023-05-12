@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
-    private static final String ORDER_SERVICE_NAME = "orderServiceImpl";
+    private static final String ORDER_SERVICE_CALLBACK = "orderServiceCallback";
 
     @Autowired
     private PaymentService paymentService;
@@ -46,12 +46,12 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void orderPayment(String orderId) {
         log.info("orderPayment started: " + orderId);
-        paymentService.executePayment(orderId, new BigDecimal("4999.00"), new ServiceRef(ORDER_SERVICE_NAME));
+        paymentService.executePayment(orderId, new BigDecimal("4999.00"), new ServiceRef(ORDER_SERVICE_CALLBACK));
     }
 
-    @Bean(name = ORDER_SERVICE_NAME + "_callback")
+    @Bean(name = ORDER_SERVICE_CALLBACK)
     @DomainService(servicePointName = "paymentServiceCallback", subjectClass = ServiceRef.class, //
-            subjectTaggedValues = @TaggedValue(tag = "name", value = ORDER_SERVICE_NAME))
+            subjectTaggedValues = @TaggedValue(tag = "name", value = ORDER_SERVICE_CALLBACK))
     public PaymentServiceCallback getCallback() {
         return (paymentId, targetServiceRef) -> log.info("orderPayment finished: " + paymentId);
     }

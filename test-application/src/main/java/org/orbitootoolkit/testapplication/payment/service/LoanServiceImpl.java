@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class LoanServiceImpl implements LoanService {
-    private static final String LOAN_SERVICE_NAME = "loanServiceImpl";
+    private static final String LOAN_SERVICE_CALLBACK = "loanServiceCallback";
 
     @Autowired
     private PaymentService paymentService;
@@ -46,12 +46,12 @@ public class LoanServiceImpl implements LoanService {
     @Override
     public void loanPayment(String loanId) {
         log.info("loanPayment started: " + loanId);
-        paymentService.executePayment(loanId, new BigDecimal("100.00"), new ServiceRef(LOAN_SERVICE_NAME));
+        paymentService.executePayment(loanId, new BigDecimal("100.00"), new ServiceRef(LOAN_SERVICE_CALLBACK));
     }
 
-    @Bean(name = LOAN_SERVICE_NAME + "_callback")
+    @Bean(name = LOAN_SERVICE_CALLBACK)
     @DomainService(servicePointName = "paymentServiceCallback", subjectClass = ServiceRef.class, //
-            subjectTaggedValues = @TaggedValue(tag = "name", value = LOAN_SERVICE_NAME))
+            subjectTaggedValues = @TaggedValue(tag = "name", value = LOAN_SERVICE_CALLBACK))
     public PaymentServiceCallback getCallback() {
         return (paymentId, targetServiceRef) -> log.info("loanPayment finished: " + paymentId);
     }
