@@ -27,7 +27,7 @@ import java.time.Duration;
 import org.apache.commons.lang3.ThreadUtils;
 import org.orbitootoolkit.core.api.ServicePointReference;
 import org.orbitootoolkit.testapplication.payment.api.PaymentService;
-import org.orbitootoolkit.testapplication.payment.api.PaymentServiceCallback;
+import org.orbitootoolkit.testapplication.payment.api.PaymentCallback;
 import org.orbitootoolkit.testapplication.payment.model.ServiceRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentServiceImpl implements PaymentService {
     @Autowired
     @ServicePointReference
-    private PaymentServiceCallback paymentServiceCallback;
+    private PaymentCallback paymentServiceCallback;
 
     private static void sleep(Duration duration) {
         try {

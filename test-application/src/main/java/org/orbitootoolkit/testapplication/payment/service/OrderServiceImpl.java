@@ -27,7 +27,7 @@ import org.orbitootoolkit.core.api.DomainService;
 import org.orbitootoolkit.core.api.TaggedValue;
 import org.orbitootoolkit.testapplication.payment.api.OrderService;
 import org.orbitootoolkit.testapplication.payment.api.PaymentService;
-import org.orbitootoolkit.testapplication.payment.api.PaymentServiceCallback;
+import org.orbitootoolkit.testapplication.payment.api.PaymentCallback;
 import org.orbitootoolkit.testapplication.payment.model.ServiceRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
-    private static final String ORDER_SERVICE_CALLBACK = "orderServiceCallback";
+    private static final String ORDER_PAYMENT_CALLBACK = "orderPaymentCallback";
 
     @Autowired
     private PaymentService paymentService;
@@ -46,13 +46,13 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void orderPayment(String orderId) {
         log.info("orderPayment started: " + orderId);
-        paymentService.executePayment(orderId, new BigDecimal("4999.00"), new ServiceRef(ORDER_SERVICE_CALLBACK));
+        paymentService.executePayment(orderId, new BigDecimal("4999.00"), new ServiceRef(ORDER_PAYMENT_CALLBACK));
     }
 
-    @Bean(name = ORDER_SERVICE_CALLBACK)
-    @DomainService(servicePointName = "paymentServiceCallback", subjectClass = ServiceRef.class, //
-            subjectTaggedValues = @TaggedValue(tag = "name", value = ORDER_SERVICE_CALLBACK))
-    public PaymentServiceCallback getCallback() {
+    @Bean
+    @DomainService(servicePointName = "paymentCallback", subjectClass = ServiceRef.class, //
+            subjectTaggedValues = @TaggedValue(tag = "value", value = ORDER_PAYMENT_CALLBACK))
+    public PaymentCallback getOrderPaymentCallback() {
         return (paymentId, targetServiceRef) -> log.info("orderPayment finished: " + paymentId);
     }
 }

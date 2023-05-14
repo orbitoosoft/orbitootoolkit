@@ -33,6 +33,6 @@ import lombok.ToString;
 @Setter
 @ToString
 public class ServiceRef {
-    @Tag(name = "name")
-    private String name = null;
+    @Tag(name = "value")
+    private String value = null;
 }
