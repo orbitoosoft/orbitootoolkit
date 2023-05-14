@@ -57,8 +57,8 @@ public class PaymentServiceImpl implements PaymentService {
         log.info("payment started [" + paymentId + ", " + amount + "]");
         sleep(Duration.ofSeconds(3));
         log.info("payment finished [" + paymentId + ", " + amount + "]");
-        // send the callback
         sleep(Duration.ofSeconds(1));
+        // send the callback
         paymentServiceCallback.paymentExecuted(paymentId, callbackServiceRef);
     }
 }
