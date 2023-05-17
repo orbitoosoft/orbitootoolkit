@@ -33,6 +33,9 @@ import org.orbitootoolkit.testapplication.animal.model.PokemonState;
 import org.orbitootoolkit.testapplication.animal.model.PokemonType;
 import org.orbitootoolkit.testapplication.payment.api.LoanService;
 import org.orbitootoolkit.testapplication.payment.api.OrderService;
+import org.orbitootoolkit.testapplication.task.api.IssueService;
+import org.orbitootoolkit.testapplication.task.model.Issue;
+import org.orbitootoolkit.testapplication.task.model.IssueType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,7 +58,16 @@ public class TestBean {
     @Autowired
     private OrderService orderService;
 
+    @Autowired
+    @ServicePointReference
+    private IssueService issueService;
+
+    @SuppressWarnings("java:S1192")
     private void testInheritance() {
+        log.info("----------------------------------------");
+        log.info("- testInheritance - 1 ------------------");
+        log.info("----------------------------------------");
+        //
         Dog dog = new Dog("Buddy");
         Cat cat = new Cat("Tigger");
         Pokemon charizard = new Pokemon(PokemonType.CHARIZARD, PokemonState.WILD);
@@ -74,6 +86,10 @@ public class TestBean {
             log.info(ex.getClass().getSimpleName() + ": " + ex.getMessage());
         }
         //
+        log.info("----------------------------------------");
+        log.info("- testInheritance - 2 ------------------");
+        log.info("----------------------------------------");
+        //
         try {
             animalServiceByName.makeSound(dog);
             animalServiceByName.makeSound(cat);
@@ -86,13 +102,36 @@ public class TestBean {
         }
     }
 
+    @SuppressWarnings("java:S1192")
+    private void testWorkflow() {
+        log.info("----------------------------------------");
+        log.info("- testWorkflow -------------------------");
+        log.info("----------------------------------------");
+        //
+        Issue issue = new Issue("Issue-2023-01-01-0001", IssueType.TASK);
+        log.info("new issue: " + issue.getId());
+        //
+        issueService.issueImplementationStarted(issue);
+        issueService.issueImplementationFinished(issue);
+        issueService.issueTested(issue, false);
+        issueService.issueImplementationStarted(issue);
+        issueService.issueImplementationFinished(issue);
+        issueService.issueTested(issue, true);
+    }
+
+    @SuppressWarnings("java:S1192")
     private void testCallback() {
+        log.info("----------------------------------------");
+        log.info("- testCallback -------------------------");
+        log.info("----------------------------------------");
+        //
         loadService.loanPayment("LOAN-2023-01-01-0001");
         orderService.orderPayment("ORDER-2023-01-01-9999");
     }
 
     public void test() {
         testInheritance();
+        testWorkflow();
         testCallback();
     }
 }
