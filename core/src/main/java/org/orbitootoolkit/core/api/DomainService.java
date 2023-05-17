@@ -38,4 +38,6 @@ public @interface DomainService {
     public Class<?> subjectClass();
 
     public TaggedValue[] subjectTaggedValues() default {};
+
+    public TaggedValue[] additionalTaggedValues() default {};
 }

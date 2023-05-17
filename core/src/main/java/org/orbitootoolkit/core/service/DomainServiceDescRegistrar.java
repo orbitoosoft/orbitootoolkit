@@ -54,10 +54,17 @@ public class DomainServiceDescRegistrar implements BeanDefinitionRegistryPostPro
 
     private static List<TaggedValueDesc> extractTaggedValueDescs(DomainService domainService) {
         List<TaggedValueDesc> taggedValueDescs = new LinkedList<TaggedValueDesc>();
-        TaggedValue[] taggedValues = ArrayUtils.nullToEmpty(domainService.subjectTaggedValues(), TaggedValue[].class);
-        for (TaggedValue taggedValue : taggedValues) {
-            taggedValueDescs.add(new TaggedValueDesc(taggedValue.tag(), taggedValue.value()));
+        //
+        TaggedValue[] subjectTaggedValues = ArrayUtils.nullToEmpty(domainService.subjectTaggedValues(), TaggedValue[].class);
+        for (TaggedValue subjectTaggedValue : subjectTaggedValues) {
+            taggedValueDescs.add(new TaggedValueDesc(subjectTaggedValue.tag(), subjectTaggedValue.value()));
         }
+        //
+        TaggedValue[] additionalTaggedValues = ArrayUtils.nullToEmpty(domainService.additionalTaggedValues(), TaggedValue[].class);
+        for (TaggedValue additionalTaggedValue : additionalTaggedValues) {
+            taggedValueDescs.add(new TaggedValueDesc(additionalTaggedValue.tag(), additionalTaggedValue.value()));
+        }
+        //
         return Collections.unmodifiableList(taggedValueDescs);
     }
 
@@ -83,9 +90,9 @@ public class DomainServiceDescRegistrar implements BeanDefinitionRegistryPostPro
     @SuppressWarnings("java:S6204")
     private List<DomainService> getDomainServices(AnnotatedTypeMetadata metadata) {
         MergedAnnotations mergedAnnotations = (metadata != null) ? metadata.getAnnotations() : null;
-        if ((mergedAnnotations != null) && mergedAnnotations.isDirectlyPresent(DomainService.class)) {
+        if ((mergedAnnotations != null) && mergedAnnotations.isPresent(DomainService.class)) {
             return mergedAnnotations.stream(DomainService.class) //
-                    .filter(MergedAnnotation::isDirectlyPresent) //
+                    .filter(MergedAnnotation::isPresent) //
                     .map(MergedAnnotation::synthesize) //
                     .collect(Collectors.toUnmodifiableList());
         } else {
