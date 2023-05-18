@@ -1,18 +1,18 @@
 # orbitoo-toolkit: Advanced Guide (IN-PROGRESS)
 
-The advanced guide contains several pattern, in order to show to implement:
+The advanced guide contains several patterns, in order to show how to implement:
 * the service callback
 * the application workflow
 
-The concrete application can use these patterns and adapt them to their specific context.
+The concrete application can use these patterns and it can adapt them to its specific context.
 
 ## The Service Callback
-Callbacks allows us to compose larger the activity from smaller activities. For example:
+Callbacks allows us to compose the larger activity from smaller activities. For example:
 we can have the entity, which represents customer's `Order`. During processing of `Order` the customer
 will need to perform payment, which is represented by `Payment` entity. Once the customer finishes `Payment`
-we need to notify `Order`, which can perform transition to the next state.
+we need to notify `Order`, which can continue in its processing.
 
-First it is necessary to define DTO to store the service (callback) address:
+First it is necessary to define an entity for the service reference:
 ```java
 @AllArgsConstructor
 @Getter
@@ -24,55 +24,59 @@ public class ServiceRef {
 }
 ```
 
-Then we need to define `@ServicePoint` with one functional method:
+Then we need to define callback `@ServicePoint` with a service reference as `@Subject`:
 ```java
-@ServicePoint("callbackServicePoint")
-@FunctionalInterface
-public interface CallbackHandler {
-    public void process(@Subject Callback callback);
+@ServicePoint("paymentCallback")
+public interface PaymentCallback {
+    public void paymentExecuted(String paymentId, @Subject ServiceRef serviceRef);
 }
 ```
 
-After that we can send the callback from our `PaymentService`:
+After that we should be able to send the callback from our `PaymentService`:
 ```java
+@Slf4j
 @Service
 public class PaymentServiceImpl implements PaymentService {
     @Autowired
     @ServicePointReference
-    private CallbackHandler callbackHandler;
+    private PaymentCallback paymentCallback;
 
     @Async
     @Override
-    public void createPayment(String paymentId, Callback callback) {
+    public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackRef) {
         // simulate the payment
         ...
         // send the callback
-        callbackHandler.process(callback);
+        paymentCallback.paymentExecuted(paymentId, callbackRef);
     }
 }
 ```
 
-Finally we can invoke `PaymentService` from `OrderService` and wait for the callback,
-which will trigger the method annotated by `@SignalMapping`:
+Finally we can invoke `PaymentService` from `OrderService` and receive to the callback.
+This will be done in three steps:
+* first we will choose an unique service reference
+* then we will invoke `PaymentService` with the chosen service reference
+* finally we will specify callback `@Bean` and we will bind it to the chosen service reference
 ```java
+@Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
+    private static final String ORDER_PAYMENT_CALLBACK = "orderPaymentCallback";
+
     @Autowired
     private PaymentService paymentService;
 
     @Override
     public void orderPayment(String orderId) {
         log.info("orderPayment started: " + orderId);
-        Callback callback = new Callback(CallbackTarget.ORDER_SERVICE, orderId);
-        paymentService.createPayment(orderId, callback);
+        paymentService.executePayment(orderId, new BigDecimal("4999.00"), new ServiceRef(ORDER_PAYMENT_CALLBACK));
     }
 
-    @SignalMapping(servicePointName = "callbackServicePoint",
-            servicePointClass = CallbackHandler.class,
-            subjectClass = Callback.class,
-            subjectTaggedValues = @TaggedValue(tag = "target", value = "ORDER_SERVICE"))
-    public void acceptOrderPaymentCallback(Callback callback) {
-        log.info("orderPayment finished: " + callback.getOrderId());
+    @Bean
+    @DomainService(servicePointName = "paymentCallback", subjectClass = ServiceRef.class, //
+            subjectTaggedValues = @TaggedValue(tag = "value", value = ORDER_PAYMENT_CALLBACK))
+    public PaymentCallback getOrderPaymentCallback() {
+        return (paymentId, serviceRef) -> log.info("orderPayment finished: " + paymentId);
     }
 }
 ```
