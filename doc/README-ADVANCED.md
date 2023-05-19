@@ -120,8 +120,7 @@ We want to implement the following workflow for our **tasks**:<br>
 ![Task Lifecycle](img/task-lifecycle.png)
 
 First we will define `@ServicePoint`, which will contain API for all **issues**.
-Additionally it will also expose method **entryState**, which will be used internally
-for transaction between states.
+It will also expose method **entryState**, which will be used internally for transaction between states.
 
 ```java
 @ServicePoint("issueServicePoint")
