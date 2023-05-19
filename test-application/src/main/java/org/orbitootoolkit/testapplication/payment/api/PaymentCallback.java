@@ -27,5 +27,5 @@ import org.orbitootoolkit.testapplication.payment.model.ServiceRef;
 
 @ServicePoint("paymentCallback")
 public interface PaymentCallback {
-    public void paymentExecuted(String paymentId, @Subject ServiceRef targetServiceRef);
+    public void paymentExecuted(String paymentId, @Subject ServiceRef serviceRef);
 }

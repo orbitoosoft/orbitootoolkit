@@ -4,13 +4,13 @@ The advanced guide contains several patterns, in order to show how to implement:
 * the service callback
 * the application workflow
 
-The concrete application can use these patterns and it can adapt them to its specific context.
+The concrete application can adapt these patterns to its specific context.
 
 ## The Service Callback
-Callbacks allows us to compose the larger activity from smaller activities. For example:
-we can have the entity, which represents customer's `Order`. During processing of `Order` the customer
-will need to perform payment, which is represented by `Payment` entity. Once the customer finishes `Payment`
-we need to notify `Order`, which can continue in its processing.
+Callbacks allows us to compose the larger activity from smaller activities. For example we can have the entity,
+which represents customer's `Order`. During processing of `Order` we will need to perform the payment,
+which is represented by `Payment` entity. Once the customer finishes `Payment` we need to notify `Order`,
+which will continue with its processing.
 
 First it is necessary to define an entity for the service reference:
 ```java
@@ -44,7 +44,6 @@ public class PaymentServiceImpl implements PaymentService {
     @Async
     @Override
     public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackRef) {
-        // simulate the payment
         ...
         // send the callback
         paymentCallback.paymentExecuted(paymentId, callbackRef);
@@ -52,7 +51,7 @@ public class PaymentServiceImpl implements PaymentService {
 }
 ```
 
-Finally we can invoke `PaymentService` from `OrderService` and receive to the callback.
+Finally we can invoke `PaymentService` from `OrderService` and process the callback.
 This will be done in three steps:
 * first we will choose an unique service reference
 * then we will invoke `PaymentService` with the chosen service reference
@@ -61,7 +60,7 @@ This will be done in three steps:
 @Slf4j
 @Service
 public class OrderServiceImpl implements OrderService {
-    private static final String ORDER_PAYMENT_CALLBACK = "orderPaymentCallback";
+    private static final String ORDER_PAYMENT_CALLBACK = "OrderServiceImpl#PaymentCallback";
 
     @Autowired
     private PaymentService paymentService;

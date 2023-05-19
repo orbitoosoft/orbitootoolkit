@@ -26,8 +26,8 @@ import java.math.BigDecimal;
 import org.orbitootoolkit.core.api.DomainService;
 import org.orbitootoolkit.core.api.TaggedValue;
 import org.orbitootoolkit.testapplication.payment.api.LoanService;
-import org.orbitootoolkit.testapplication.payment.api.PaymentService;
 import org.orbitootoolkit.testapplication.payment.api.PaymentCallback;
+import org.orbitootoolkit.testapplication.payment.api.PaymentService;
 import org.orbitootoolkit.testapplication.payment.model.ServiceRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -38,7 +38,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class LoanServiceImpl implements LoanService {
-    private static final String LOAN_PAYMENT_CALLBACK = "loanPaymentCallback";
+    private static final String LOAN_PAYMENT_CALLBACK = "LoanServiceImpl#PaymentCallback";
 
     @Autowired
     private PaymentService paymentService;
@@ -53,6 +53,6 @@ public class LoanServiceImpl implements LoanService {
     @DomainService(servicePointName = "paymentCallback", subjectClass = ServiceRef.class, //
             subjectTaggedValues = @TaggedValue(tag = "value", value = LOAN_PAYMENT_CALLBACK))
     public PaymentCallback getLoanPaymentCallback() {
-        return (paymentId, targetServiceRef) -> log.info("loanPayment finished: " + paymentId);
+        return (paymentId, serviceRef) -> log.info("loanPayment finished: " + paymentId);
     }
 }

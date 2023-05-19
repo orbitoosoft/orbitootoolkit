@@ -26,5 +26,5 @@ import java.math.BigDecimal;
 import org.orbitootoolkit.testapplication.payment.model.ServiceRef;
 
 public interface PaymentService {
-    public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackServiceRef);
+    public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackRef);
 }

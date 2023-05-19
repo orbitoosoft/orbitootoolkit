@@ -26,8 +26,8 @@ import java.time.Duration;
 
 import org.apache.commons.lang3.ThreadUtils;
 import org.orbitootoolkit.core.api.ServicePointReference;
-import org.orbitootoolkit.testapplication.payment.api.PaymentService;
 import org.orbitootoolkit.testapplication.payment.api.PaymentCallback;
+import org.orbitootoolkit.testapplication.payment.api.PaymentService;
 import org.orbitootoolkit.testapplication.payment.model.ServiceRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -40,7 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 public class PaymentServiceImpl implements PaymentService {
     @Autowired
     @ServicePointReference
-    private PaymentCallback paymentServiceCallback;
+    private PaymentCallback paymentCallback;
 
     private static void sleep(Duration duration) {
         try {
@@ -52,13 +52,13 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Async
     @Override
-    public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackServiceRef) {
+    public void executePayment(String paymentId, BigDecimal amount, ServiceRef callbackRef) {
         // simulate the payment
         log.info("payment started [" + paymentId + ", " + amount + "]");
         sleep(Duration.ofSeconds(3));
         log.info("payment finished [" + paymentId + ", " + amount + "]");
         sleep(Duration.ofSeconds(1));
         // send the callback
-        paymentServiceCallback.paymentExecuted(paymentId, callbackServiceRef);
+        paymentCallback.paymentExecuted(paymentId, callbackRef);
     }
 }
