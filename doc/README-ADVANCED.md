@@ -1,4 +1,4 @@
-# orbitoo-toolkit: Advanced Guide (IN-PROGRESS)
+# orbitoo-toolkit: Advanced Guide
 
 The advanced guide contains several patterns, in order to show how to implement:
 * [the service callback](#The-Service-Callback)
