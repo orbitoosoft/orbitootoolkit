@@ -1,8 +1,8 @@
 # orbitoo-toolkit: Advanced Guide (IN-PROGRESS)
 
 The advanced guide contains several patterns, in order to show how to implement:
-* the service callback
-* the application workflow
+* [the service callback](#The-Service-Callback)
+* [the application workflow](#The-Application-Workflow)
 
 The concrete application can adapt these patterns to its specific context.
 
@@ -17,7 +17,6 @@ First it is necessary to define an entity for the service reference:
 @AllArgsConstructor
 @Getter
 @Setter
-@ToString
 public class ServiceRef {
     @Tag(name = "value")
     private String value = null;
@@ -34,7 +33,6 @@ public interface PaymentCallback {
 
 After that we should be able to send the callback from our `PaymentService`:
 ```java
-@Slf4j
 @Service
 public class PaymentServiceImpl implements PaymentService {
     @Autowired
@@ -85,3 +83,34 @@ Output:
 orderPayment started: ORDER-2023-01-01-0001
 orderPayment finished: ORDER-2023-01-01-0001
 ```
+
+## The Application Workflow
+The following paragraph describes, how to implement a simple workflow with help of the toolkit.
+Let's imagine, that we are developing a system, which will manages issues (like JIRA).
+
+The system will have to manage several types of the issues:
+```java
+public enum IssueType {
+    TASK, BUG
+}
+```
+
+We will store issues in our database:
+```java
+@Slf4j
+@Getter
+@Setter
+@ToString
+public class Issue {
+    private String id = null;
+
+    @Tag(name = "type", priority = 2)
+    private IssueType type = null;
+
+    @Tag(name = "state", priority = 1)
+    private String state = null;
+}
+```
+
+For our tasks we will have the following workflow, which we will need to implement:<br>
+![Task Lifecycle](img/task-lifecycle.png)

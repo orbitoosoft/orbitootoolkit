@@ -13,7 +13,7 @@ The toolkit can be used to solve many problems on the service layer. For example
 * implementation of service callbacks
 * implementation of the application workflow
 
-You can find more information about these topics in [Advanced Guide](README-ADVANCED.md).
+You can find more information about these topics in [Advanced Guide](doc/README-ADVANCED.md).
 
 ## Application Startup
 Before starting of spring-boot we need to:
