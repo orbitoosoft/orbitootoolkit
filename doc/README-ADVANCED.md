@@ -104,7 +104,6 @@ public enum IssueType {
 @Slf4j
 @Getter
 @Setter
-@ToString
 public class Issue {
     private String id = null;
 
@@ -140,3 +139,96 @@ public interface IssueService {
     }
 }
 ```
+
+Then we can start to implement **task** workflow in service `TaskServiceImpl`.
+In our case the state will be represented by `DomainService`, which will be bound to our @ServicePoint,
+**task** type and to the specific issue **state**.
+<br>
+In order to make the code more simple, we will implement merged annotation `@State` and `@Ref`:
+
+```java
+    @Retention(RetentionPolicy.RUNTIME)
+    @Bean
+    @DomainService( //
+            servicePointName = "issueServicePoint", subjectClass = Issue.class, //
+            subjectTaggedValues = @TaggedValue(tag = "type", value = "TASK") //
+    )
+    public static @interface State {
+        @AliasFor(annotation = DomainService.class, attribute = "additionalTaggedValues")
+        public TaggedValue[] value();
+    }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Autowired
+    @Qualifier
+    @Lazy
+    public static @interface Ref {
+        @AliasFor(annotation = Qualifier.class, attribute = "value")
+        public String value();
+    }
+```
+
+Then we can start to define states with transitions and business logic:
+
+```java
+    @State(@TaggedValue(tag = "state", value = "OPENED"))
+    public IssueService getTaskOpenedService(@Ref("getTaskInProgressService") IssueService taskInProgressService) {
+        return new IssueService() {
+            @Override
+            public void entryState(Issue issue) {
+                issue.setState("OPENED");
+            }
+
+            @Override
+            public void issueImplementationStarted(Issue issue) {
+                log.info("issueImplementationStarted: " + issue.getId());
+                taskInProgressService.entryState(issue);
+            }
+        };
+    }
+
+    @State(@TaggedValue(tag = "state", value = "IN-PROGRESS"))
+    public IssueService getTaskInProgressService(@Ref("getTaskInTestService") IssueService taskInTestService) {
+        return new IssueService() {
+            @Override
+            public void entryState(Issue issue) {
+                issue.setState("IN-PROGRESS");
+            }
+
+            @Override
+            public void issueImplementationFinished(Issue issue) {
+                log.info("issueImplementationFinished: " + issue.getId());
+                taskInTestService.entryState(issue);
+            }
+        };
+    }
+
+    @State(@TaggedValue(tag = "state", value = "IN-TEST"))
+    public IssueService getTaskInTestService( //
+            @Ref("getTaskOpenedService") IssueService taskOpenedService, //
+            @Ref("getTaskClosedService") IssueService taskClosedService //
+    ) {
+        return new IssueService() {
+            @Override
+            public void entryState(Issue issue) {
+                issue.setState("IN-TEST");
+            }
+
+            @Override
+            public void issueTested(Issue issue, boolean testPassed) {
+                log.info("issueTested: " + issue.getId() + ", " + testPassed);
+                if (testPassed) {
+                    taskClosedService.entryState(issue);
+                } else {
+                    taskOpenedService.entryState(issue);
+                }
+            }
+        };
+    }
+
+    @State(@TaggedValue(tag = "state", value = "CLOSED"))
+    public IssueService getTaskClosedService() {
+        return issue -> issue.setState("CLOSED");
+    }
+```
+
