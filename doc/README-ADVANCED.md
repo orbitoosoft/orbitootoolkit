@@ -54,7 +54,7 @@ public class PaymentServiceImpl implements PaymentService {
 
 Finally we can invoke `PaymentService` from `OrderService` and process the callback.
 This will be done in three steps:
-* first we will choose an unique service reference
+* first we will define an unique service reference
 * then we will invoke `PaymentService` with the chosen service reference
 * finally we will specify callback `@Bean` and we will bind it to the chosen service reference
 
@@ -92,9 +92,9 @@ orderPayment finished: ORDER-2023-01-01-0001
 ## The Application Workflow
 The following paragraph describes, how to implement a simple workflow with help of the toolkit.
 
-Let's imagine, that we are developing a system, which will manages issues (like JIRA).
-The information about the issues will be stored in our database.
-Additional the system will have to manage several types of the issues:
+Let's imagine, that we are developing a system, which will manages development issues.
+We will store the information about the issue in our database. This include the issue type
+(*TASK*, *BUG*) and the issue state (for example *OPENED*, *CLOSED*, etc.):
 
 ```java
 public enum IssueType {
@@ -115,11 +115,11 @@ public class Issue {
 }
 ```
 
-We want to implement the following workflow for our **tasks**:<br>
+We want to implement the following workflow for our *TASKS*:<br>
 ![Task Lifecycle](img/task-lifecycle.png)
 
-First we will define `@ServicePoint`, which will contain API for all **issues**.<br>
-It will also expose method **entryState**, which will be used internally for transaction between states.
+First we will define `@ServicePoint`, which will contain API for all issues.<br>
+It will also expose method *entryState*, which will be used internally for the transition between states.
 
 ```java
 @ServicePoint("issueServicePoint")
@@ -140,11 +140,11 @@ public interface IssueService {
 }
 ```
 
-Then we can start to implement **task** workflow in service `TaskServiceImpl`.<br>
-In our case the state will be represented by `DomainService`, which will be bound to our @ServicePoint,
-**task** issue type and to the issue state.<br>
+Then we can start to implement *TASK* workflow in service `TaskServiceImpl`.<br>
+In our case the state will be represented by `@DomainService`, which will be bound to our `@ServicePoint`,
+to the *TASK* issue type and to the issue state.<br>
 <br>
-In order to make the code more simple, we will implement merged annotation `@State` and `@Ref`:
+In order to make the code more simple, we will implement two merged annotations: `@State` and `@Ref`:
 
 ```java
     @Retention(RetentionPolicy.RUNTIME)
@@ -232,7 +232,7 @@ Then we can start to define states with transitions and business logic:
     }
 ```
 
-Finally we can create new **task** and test at its workflow:
+Finally we can create new *TASK* and test at its workflow:
 
 ```java
 @Slf4j

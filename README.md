@@ -3,9 +3,8 @@
 The goal of the orbitoo-toolkit is to enhance spring-boot with [OOP](https://en.wikipedia.org/wiki/Object-oriented_programming).
 The toolkit allows to work with entities as with objects: now they can contain both behavior and attributes.
 In order to achieve it the toolkit allows to bind services (behavior) with entities (state). Upon receiving the request,
-the toolkit selects the proper service based on the type of subject entity (the type can be reprezented either
-by the java class or by the tagged property). Additionally the toolkit has support of signals, which allows
-to compose larger activities from smaller objects.
+the toolkit selects the proper service based on the type of subject entity (the type can be represented either
+by the java class or by the tagged property).
 
 The toolkit is working with [Spring-Boot 3.x](https://spring.io/) and [Java 17](https://openjdk.org/).
 
@@ -51,7 +50,7 @@ public class Fish extends Animal {
 
 For each animal we want to know, what sound it makes.
 So we will define `AnimalService` interface with:
-* `@ServicePoint` ...    specifies servicepoint, which to which are registered domain services
+* `@ServicePoint` ...    specifies servicepoint, to which are registered domain services
 * `@Subject` ...    specifies subject entity
 
 ```java
