@@ -13,6 +13,7 @@ which is represented by `Payment` entity. Once the customer finishes `Payment` w
 which will continue with its processing.
 
 First it is necessary to define an entity for the service reference:
+
 ```java
 @AllArgsConstructor
 @Getter
@@ -24,6 +25,7 @@ public class ServiceRef {
 ```
 
 Then we need to define callback `@ServicePoint` with a service reference as `@Subject`:
+
 ```java
 @ServicePoint("paymentCallback")
 public interface PaymentCallback {
@@ -32,6 +34,7 @@ public interface PaymentCallback {
 ```
 
 After that we should be able to send the callback from our `PaymentService`:
+
 ```java
 @Service
 public class PaymentServiceImpl implements PaymentService {
@@ -54,6 +57,7 @@ This will be done in three steps:
 * first we will choose an unique service reference
 * then we will invoke `PaymentService` with the chosen service reference
 * finally we will specify callback `@Bean` and we will bind it to the chosen service reference
+
 ```java
 @Slf4j
 @Service
@@ -79,6 +83,7 @@ public class OrderServiceImpl implements OrderService {
 ```
 
 Output:
+
 ```
 orderPayment started: ORDER-2023-01-01-0001
 orderPayment finished: ORDER-2023-01-01-0001
@@ -86,17 +91,16 @@ orderPayment finished: ORDER-2023-01-01-0001
 
 ## The Application Workflow
 The following paragraph describes, how to implement a simple workflow with help of the toolkit.
-Let's imagine, that we are developing a system, which will manages issues (like JIRA).
 
-The system will have to manage several types of the issues:
+Let's imagine, that we are developing a system, which will manages issues (like JIRA).
+The information about the issues will be stored in our database.
+Additional the system will have to manage several types of the issues:
+
 ```java
 public enum IssueType {
     TASK, BUG
 }
-```
 
-We will store issues in our database:
-```java
 @Slf4j
 @Getter
 @Setter
@@ -112,12 +116,13 @@ public class Issue {
 }
 ```
 
-We will implement the following workflow for our **tasks**:<br>
+We want to implement the following workflow for our **tasks**:<br>
 ![Task Lifecycle](img/task-lifecycle.png)
 
 First we will define `@ServicePoint`, which will contain API for all **issues**.
 Additionally it will also expose method **entryState**, which will be used internally
 for transaction between states.
+
 ```java
 @ServicePoint("issueServicePoint")
 public interface IssueService {

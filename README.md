@@ -19,6 +19,7 @@ You can find more information about these topics in [Advanced Guide](doc/README-
 Before starting of spring-boot we need to:
 * add package `org.orbitootoolkit.core` to `@ComponentScan`
 * use `@ServicePointScan` to register `@ServicePoint` components
+
 ```java
 @SpringBootApplication
 @ComponentScan(basePackages = { "org.orbitootoolkit.core", "org.orbitootoolkit.testapplication" })
@@ -33,6 +34,7 @@ public class TestApplication {
 ## Introduction
 Let's start with classic OOP example.
 Let's suppose that in the database we are storing information about animals:
+
 ```java
 public abstract class Animal {
     ...
@@ -51,6 +53,7 @@ For each animal we want to know, what sound it makes.
 So we will define `AnimalService` interface with:
 * `@ServicePoint` ...    specifies servicepoint, which to which are registered domain services
 * `@Subject` ...    specifies subject entity
+
 ```java
 @ServicePoint("animalServicePoint")
 public interface AnimalService {
@@ -59,6 +62,7 @@ public interface AnimalService {
 ```
 
 Then we can define services and bind them to the entities using `@DomainService`:
+
 ```java
 @Service
 @DomainService(servicePointName = "animalServicePoint", subjectClass = Animal.class)
@@ -82,6 +86,7 @@ public class DogServiceImpl implements AnimalService {
 Finally we can load animals from database and check, what sound they makes. We will send all
 requests to servicepoint (injected using qualifier`@ServicePointReference`) and the toolkit
 will dispatch the request to the proper domain service based on the type of subject entity.
+
 ```java
 @Service
 public class TestBean {
@@ -100,6 +105,7 @@ public class TestBean {
 ```
 
 Output:
+
 ```
 Dog [Buddy]: woof woof
 Fish doesn't make sound.
@@ -109,6 +115,7 @@ Fish doesn't make sound.
 Sometimes we need to be able to customize the behavior based on the specific property of the entity
 (for example we need have a special behavior for VIP customers). The toolkit allows to mark a such
 property using `Tag` and bind the domain service to specific `TaggedValue`. For example:
+
 ```java
 public enum PokemonType {
     PIKACHU, CHARIZARD, ...
@@ -125,6 +132,7 @@ public class Pokemon extends Animal {
 ```
 
 Then we can define a special service for a specific `PokemonType`. For example:
+
 ```java
 @Service
 @DomainService(servicePointName = "animalServicePoint", subjectClass = Pokemon.class,
@@ -138,6 +146,7 @@ public class PikachuServiceImpl implements AnimalService {
 ```
 
 Finally we can check our code:
+
 ```java
 @Service
 public class TestBean {
@@ -153,6 +162,7 @@ public class TestBean {
 ```
 
 Output:
+
 ```
 Pikachu: hello
 ```
