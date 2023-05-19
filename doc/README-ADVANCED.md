@@ -232,3 +232,44 @@ Then we can start to define states with transitions and business logic:
     }
 ```
 
+Finally we can create new **task** and test at its workflow:
+
+```java
+@Slf4j
+@Service
+public class TestBean {
+    @Autowired
+    @ServicePointReference
+    private IssueService issueService;
+
+    private void testWorkflow() {
+        Issue issue = new Issue("Issue-2023-01-01-0001", IssueType.TASK);
+        log.info("new issue: " + issue.getId());
+        //
+        issueService.issueImplementationStarted(issue);
+        issueService.issueImplementationFinished(issue);
+        issueService.issueTested(issue, false);
+        issueService.issueImplementationStarted(issue);
+        issueService.issueImplementationFinished(issue);
+        issueService.issueTested(issue, true);
+    }
+}
+```
+
+Output:
+```
+INFO  o.o.t.t.m.Issue: new Issue [Issue-2023-01-01-0001, TASK, OPENED]
+INFO  o.o.t.TestBean: new issue: Issue-2023-01-01-0001
+INFO  o.o.t.t.s.TaskServiceImpl: issueImplementationStarted: Issue-2023-01-01-0001
+INFO  o.o.t.t.m.Issue: Issue [Issue-2023-01-01-0001] OPENED -> IN-PROGRESS
+INFO  o.o.t.t.s.TaskServiceImpl: issueImplementationFinished: Issue-2023-01-01-0001
+INFO  o.o.t.t.m.Issue: Issue [Issue-2023-01-01-0001] IN-PROGRESS -> IN-TEST
+INFO  o.o.t.t.s.TaskServiceImpl: issueTested: Issue-2023-01-01-0001, false
+INFO  o.o.t.t.m.Issue: Issue [Issue-2023-01-01-0001] IN-TEST -> OPENED
+INFO  o.o.t.t.s.TaskServiceImpl: issueImplementationStarted: Issue-2023-01-01-0001
+INFO  o.o.t.t.m.Issue: Issue [Issue-2023-01-01-0001] OPENED -> IN-PROGRESS
+INFO  o.o.t.t.s.TaskServiceImpl: issueImplementationFinished: Issue-2023-01-01-0001
+INFO  o.o.t.t.m.Issue: Issue [Issue-2023-01-01-0001] IN-PROGRESS -> IN-TEST
+INFO  o.o.t.t.s.TaskServiceImpl: issueTested: Issue-2023-01-01-0001, true
+INFO  o.o.t.t.m.Issue: Issue [Issue-2023-01-01-0001] IN-TEST -> CLOSED
+```
