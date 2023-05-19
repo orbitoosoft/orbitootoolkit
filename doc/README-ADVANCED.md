@@ -118,7 +118,7 @@ public class Issue {
 We want to implement the following workflow for our **tasks**:<br>
 ![Task Lifecycle](img/task-lifecycle.png)
 
-First we will define `@ServicePoint`, which will contain API for all **issues**.
+First we will define `@ServicePoint`, which will contain API for all **issues**.<br>
 It will also expose method **entryState**, which will be used internally for transaction between states.
 
 ```java
@@ -140,9 +140,9 @@ public interface IssueService {
 }
 ```
 
-Then we can start to implement **task** workflow in service `TaskServiceImpl`.
+Then we can start to implement **task** workflow in service `TaskServiceImpl`.<br>
 In our case the state will be represented by `DomainService`, which will be bound to our @ServicePoint,
-**task** type and to the specific issue **state**.
+**task** issue type and to the issue state.<br>
 <br>
 In order to make the code more simple, we will implement merged annotation `@State` and `@Ref`:
 
