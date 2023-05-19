@@ -92,9 +92,8 @@ orderPayment finished: ORDER-2023-01-01-0001
 ## The Application Workflow
 The following paragraph describes, how to implement a simple workflow with help of the toolkit.
 
-Let's imagine, that we are developing a system, which will manages development issues.
-We will store the information about the issue in our database. This include the issue type
-(*TASK*, *BUG*) and the issue state (for example *OPENED*, *CLOSED*, etc.):
+Let's imagine, that we are developing a system, which will manages development issues.<br>
+We will store the information about the issue in our database:
 
 ```java
 public enum IssueType {
@@ -115,7 +114,7 @@ public class Issue {
 }
 ```
 
-We want to implement the following workflow for our *TASKS*:<br>
+We want to implement the following workflow for our *TASKs*:<br>
 ![Task Lifecycle](img/task-lifecycle.png)
 
 First we will define `@ServicePoint`, which will contain API for all issues.<br>
@@ -232,7 +231,7 @@ Then we can start to define states with transitions and business logic:
     }
 ```
 
-Finally we can create new *TASK* and test at its workflow:
+Finally we can create new *TASK* and test its workflow:
 
 ```java
 @Slf4j
