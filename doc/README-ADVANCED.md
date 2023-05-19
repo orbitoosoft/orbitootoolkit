@@ -112,5 +112,27 @@ public class Issue {
 }
 ```
 
-For our tasks we will have the following workflow, which we will need to implement:<br>
+We will implement the following workflow for our **tasks**:<br>
 ![Task Lifecycle](img/task-lifecycle.png)
+
+First we will define `@ServicePoint`, which will contain API for all **issues**.
+Additionally it will also expose method **entryState**, which will be used internally
+for transaction between states.
+```java
+@ServicePoint("issueServicePoint")
+public interface IssueService {
+    public void entryState(@Subject Issue issue);
+
+    public default void issueImplementationStarted(@Subject Issue issue) {
+        throw new IllegalStateException();
+    }
+
+    public default void issueImplementationFinished(@Subject Issue issue) {
+        throw new IllegalStateException();
+    }
+
+    public default void issueTested(@Subject Issue issue, boolean testPassed) {
+        throw new IllegalStateException();
+    }
+}
+```
