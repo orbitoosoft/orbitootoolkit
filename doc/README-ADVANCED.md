@@ -92,6 +92,12 @@ orderPayment finished: ORDER-2023-01-01-0001
 ## The Application Workflow
 The following paragraph describes, how to implement a simple workflow with help of the toolkit.
 
+As you will see a such workflow has two main advantages:
+* it is created around the concrete entity, which is defined by the application
+* the state is represented by spring-boot component and it has access to all services<br>
+  provided by the container. For example: dependency injection, O/R mapping, transactions,<br>
+  asynchronous processing etc.
+
 Let's imagine, that we are developing a system, which will manages development issues.<br>
 We will store the information about the issue in our database:
 
