@@ -23,21 +23,27 @@ package org.orbitootoolkit.testapplication.doc.model;
 
 import org.orbitootoolkit.core.api.Tag;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
 public abstract class Document {
+    @NonNull
     private String id;
 
+    @NonNull
     @Tag(name = "type", priority = 100)
     private DocumentType type;
 
+    @NonNull
     @Tag(name = "state", priority = 10)
     private DocumentState state;
+
+    private String documentUri;
 }
