@@ -22,21 +22,22 @@
 package org.orbitootoolkit.testapplication.doc.api;
 
 import org.orbitootoolkit.core.api.ServicePoint;
+import org.orbitootoolkit.core.api.Subject;
 import org.orbitootoolkit.testapplication.doc.model.Document;
 
 @ServicePoint("documentServicePoint")
 public interface DocumentService {
-    public void entryState(Document document);
+    public void initState(@Subject Document document);
 
-    public default void createDocument(Document document) {
+    public default void createDocument(@Subject Document document) {
         throw new IllegalStateException();
     }
 
-    public default boolean approveDocument(Document document) {
+    public default boolean approveDocument(@Subject Document document) {
         throw new IllegalStateException();
     }
 
-    public default void updateDocument(Document document) {
+    public default void updateDocument(@Subject Document document) {
         throw new IllegalStateException();
     }
 }

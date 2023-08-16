@@ -44,7 +44,7 @@ public class UserGuideService {
     @Retention(RetentionPolicy.RUNTIME)
     @Bean
     @DomainService( //
-            servicePointName = "documentApi", subjectClass = Document.class, //
+            servicePointName = "documentServicePoint", subjectClass = Document.class, //
             subjectTaggedValues = @TaggedValue(tag = "type", value = "USER_GUIDE") //
     )
     public static @interface State {
@@ -67,14 +67,14 @@ public class UserGuideService {
     public DocumentService getStateUserGuideRequested(@Ref("getStateUserGuideCreated") DocumentService stateCreated) {
         return new DocumentService() {
             @Override
-            public void entryState(Document document) {
-                log.info("document requested: " + document.toString());
+            public void initState(Document document) {
                 document.setState(DocumentState.REQUESTED);
+                log.info("document requested: " + document.toString());
             }
 
             @Override
             public void createDocument(Document document) {
-                stateCreated.entryState(document);
+                stateCreated.initState(document);
             }
         };
     }
@@ -83,14 +83,14 @@ public class UserGuideService {
     public DocumentService getStateUserGuideCreated(@Ref("getStateUserGuideApproved") DocumentService stateApproved) {
         return new DocumentService() {
             @Override
-            public void entryState(Document document) {
-                log.info("document created: " + document.toString());
+            public void initState(Document document) {
                 document.setState(DocumentState.CREATED);
+                log.info("document created: " + document.toString());
             }
 
             @Override
             public boolean approveDocument(Document document) {
-                stateApproved.entryState(document);
+                stateApproved.initState(document);
                 return true;
             }
         };
@@ -99,8 +99,8 @@ public class UserGuideService {
     @State(@TaggedValue(tag = "state", value = "APPROVED"))
     public DocumentService getStateUserGuideApproved() {
         return document -> {
-            log.info("document approved: " + document.toString());
             document.setState(DocumentState.APPROVED);
+            log.info("document approved: " + document.toString());
         };
     }
 }

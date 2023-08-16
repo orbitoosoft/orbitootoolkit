@@ -31,6 +31,8 @@ import org.orbitootoolkit.testapplication.animal.model.Fish;
 import org.orbitootoolkit.testapplication.animal.model.Pokemon;
 import org.orbitootoolkit.testapplication.animal.model.PokemonState;
 import org.orbitootoolkit.testapplication.animal.model.PokemonType;
+import org.orbitootoolkit.testapplication.doc.api.DocumentService;
+import org.orbitootoolkit.testapplication.doc.model.UserGuide;
 import org.orbitootoolkit.testapplication.payment.api.LoanService;
 import org.orbitootoolkit.testapplication.payment.api.OrderService;
 import org.orbitootoolkit.testapplication.task.api.IssueService;
@@ -61,6 +63,10 @@ public class TestBean {
     @Autowired
     @ServicePointReference
     private IssueService issueService;
+
+    @Autowired
+    @ServicePointReference
+    private DocumentService documentService;
 
     @SuppressWarnings("java:S1192")
     private void testInheritance() {
@@ -129,9 +135,22 @@ public class TestBean {
         orderService.orderPayment("ORDER-2023-01-01-9999");
     }
 
+    @SuppressWarnings("java:S1192")
+    private void testDocument() {
+        log.info("----------------------------------------");
+        log.info("- testDocument -------------------------");
+        log.info("----------------------------------------");
+        //
+        UserGuide userGuide = new UserGuide();
+        documentService.initState(userGuide);
+        documentService.createDocument(userGuide);
+        documentService.approveDocument(userGuide);
+    }
+
     public void test() {
         testInheritance();
         testWorkflow();
+        testDocument();
         testCallback();
     }
 }
