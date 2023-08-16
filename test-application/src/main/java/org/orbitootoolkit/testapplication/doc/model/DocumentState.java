@@ -22,5 +22,5 @@
 package org.orbitootoolkit.testapplication.doc.model;
 
 public enum DocumentState {
-    REQUESTED, CREATED, APPROVED, REJECTED
+    REQUESTED, CREATED, APPROVED, REJECTED, UPDATED
 }

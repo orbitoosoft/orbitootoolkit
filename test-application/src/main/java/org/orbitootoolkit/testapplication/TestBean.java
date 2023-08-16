@@ -32,6 +32,7 @@ import org.orbitootoolkit.testapplication.animal.model.Pokemon;
 import org.orbitootoolkit.testapplication.animal.model.PokemonState;
 import org.orbitootoolkit.testapplication.animal.model.PokemonType;
 import org.orbitootoolkit.testapplication.doc.api.DocumentService;
+import org.orbitootoolkit.testapplication.doc.model.FacebookPage;
 import org.orbitootoolkit.testapplication.doc.model.UserGuide;
 import org.orbitootoolkit.testapplication.payment.api.LoanService;
 import org.orbitootoolkit.testapplication.payment.api.OrderService;
@@ -145,6 +146,13 @@ public class TestBean {
         documentService.initState(userGuide);
         documentService.createDocument(userGuide, "https://github.com/orbitoosoft/orbitootoolkit/");
         documentService.approveDocument(userGuide);
+        //
+        FacebookPage facebookPage = new FacebookPage();
+        documentService.initState(facebookPage);
+        documentService.createDocument(facebookPage, "https://github.com/orbitoosoft/orbitootoolkit/");
+        while (!documentService.approveDocument(facebookPage)) {
+            documentService.updateDocument(facebookPage, "https://www.facebook.com/orbitootoolkit/");
+        }
     }
 
     public void test() {
