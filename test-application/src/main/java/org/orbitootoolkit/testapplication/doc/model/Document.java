@@ -21,6 +21,8 @@
  */
 package org.orbitootoolkit.testapplication.doc.model;
 
+import org.orbitootoolkit.core.api.Tag;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -31,6 +33,11 @@ import lombok.ToString;
 @Setter
 @ToString
 public abstract class Document {
+    private String id;
+
+    @Tag(name = "type", priority = 100)
     private DocumentType type;
+
+    @Tag(name = "state", priority = 10)
     private DocumentState state;
 }

@@ -19,12 +19,24 @@
  * <http://www.gnu.org/licenses/lgpl-3.0.html>.
  * =========================LICENSE_END==================================
  */
-package org.orbitootoolkit.testapplication.doc.model;
+package org.orbitootoolkit.testapplication.doc.api;
 
-import java.util.UUID;
+import org.orbitootoolkit.core.api.ServicePoint;
+import org.orbitootoolkit.testapplication.doc.model.Document;
 
-public class FacebookPage extends Document {
-    public FacebookPage() {
-        super(UUID.randomUUID().toString(), DocumentType.FACEBOOK_PAGE, DocumentState.REQUESTED);
+@ServicePoint("documentServicePoint")
+public interface DocumentService {
+    public void entryState(Document document);
+
+    public default void createDocument(Document document) {
+        throw new IllegalStateException();
+    }
+
+    public default boolean approveDocument(Document document) {
+        throw new IllegalStateException();
+    }
+
+    public default void updateDocument(Document document) {
+        throw new IllegalStateException();
     }
 }

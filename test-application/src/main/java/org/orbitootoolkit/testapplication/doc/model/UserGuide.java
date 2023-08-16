@@ -21,8 +21,10 @@
  */
 package org.orbitootoolkit.testapplication.doc.model;
 
+import java.util.UUID;
+
 public class UserGuide extends Document {
     public UserGuide() {
-        super(DocumentType.USER_GUIDE, DocumentState.REQUESTED);
+        super(UUID.randomUUID().toString(), DocumentType.USER_GUIDE, DocumentState.REQUESTED);
     }
 }
