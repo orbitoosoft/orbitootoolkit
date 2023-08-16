@@ -73,7 +73,8 @@ public class UserGuideService {
             }
 
             @Override
-            public void createDocument(Document document) {
+            public void createDocument(Document document, String documentUri) {
+                document.setDocumentUri(documentUri);
                 stateCreated.initState(document);
             }
         };

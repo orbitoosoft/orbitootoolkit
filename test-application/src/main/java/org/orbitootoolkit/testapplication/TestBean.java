@@ -143,7 +143,7 @@ public class TestBean {
         //
         UserGuide userGuide = new UserGuide();
         documentService.initState(userGuide);
-        documentService.createDocument(userGuide);
+        documentService.createDocument(userGuide, "https://github.com/orbitoosoft/orbitootoolkit/");
         documentService.approveDocument(userGuide);
     }
 
