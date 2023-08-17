@@ -24,27 +24,23 @@ package org.orbitootoolkit.testapplication.doc.model;
 import org.orbitootoolkit.core.api.Tag;
 
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@RequiredArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @ToString
 public class Document {
-    @NonNull
     private String id;
 
-    @NonNull
     @Tag(name = "type", priority = 100)
     private DocumentType type;
 
-    @NonNull
     @Setter(value = AccessLevel.NONE)
     @Tag(name = "state", priority = 10)
     private DocumentState state;

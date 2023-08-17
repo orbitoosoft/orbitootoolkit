@@ -143,11 +143,11 @@ public class TestBean {
         log.info("- testDocument -------------------------");
         log.info("----------------------------------------");
         //
-        Document userGuide = new Document("orbitootoolkit-guide", DocumentType.USER_GUIDE, DocumentState.REQUESTED);
+        Document userGuide = new Document("orbitootoolkit-guide", DocumentType.USER_GUIDE, DocumentState.REQUESTED, null);
         documentService.createDocument(userGuide, "https://github.com/orbitoosoft/orbitootoolkit/");
         documentService.approveDocument(userGuide);
         //
-        Document facebookPage = new Document("orbitootoolkit-page", DocumentType.FACEBOOK_PAGE, DocumentState.REQUESTED);
+        Document facebookPage = new Document("orbitootoolkit-page", DocumentType.FACEBOOK_PAGE, DocumentState.REQUESTED, null);
         documentService.createDocument(facebookPage, "https://github.com/orbitoosoft/orbitootoolkit/");
         while (!documentService.approveDocument(facebookPage)) {
             documentService.updateDocument(facebookPage, "https://www.facebook.com/orbitootoolkit/");
