@@ -27,8 +27,6 @@ import org.orbitootoolkit.testapplication.doc.model.Document;
 
 @ServicePoint("documentServicePoint")
 public interface DocumentService {
-    public void initState(@Subject Document document);
-
     public default void createDocument(@Subject Document document, String documentUri) {
         throw new IllegalStateException();
     }

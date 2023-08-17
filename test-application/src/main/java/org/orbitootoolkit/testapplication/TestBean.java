@@ -21,6 +21,8 @@
  */
 package org.orbitootoolkit.testapplication;
 
+import java.util.UUID;
+
 import org.orbitootoolkit.core.api.ServicePointReference;
 import org.orbitootoolkit.core.api.ServicePointReferenceByName;
 import org.orbitootoolkit.testapplication.animal.api.AnimalException;
@@ -32,8 +34,9 @@ import org.orbitootoolkit.testapplication.animal.model.Pokemon;
 import org.orbitootoolkit.testapplication.animal.model.PokemonState;
 import org.orbitootoolkit.testapplication.animal.model.PokemonType;
 import org.orbitootoolkit.testapplication.doc.api.DocumentService;
-import org.orbitootoolkit.testapplication.doc.model.FacebookPage;
-import org.orbitootoolkit.testapplication.doc.model.UserGuide;
+import org.orbitootoolkit.testapplication.doc.model.Document;
+import org.orbitootoolkit.testapplication.doc.model.DocumentState;
+import org.orbitootoolkit.testapplication.doc.model.DocumentType;
 import org.orbitootoolkit.testapplication.payment.api.LoanService;
 import org.orbitootoolkit.testapplication.payment.api.OrderService;
 import org.orbitootoolkit.testapplication.task.api.IssueService;
@@ -142,13 +145,11 @@ public class TestBean {
         log.info("- testDocument -------------------------");
         log.info("----------------------------------------");
         //
-        UserGuide userGuide = new UserGuide();
-        documentService.initState(userGuide);
+        Document userGuide = new Document(UUID.randomUUID().toString(), DocumentType.USER_GUIDE, DocumentState.REQUESTED);
         documentService.createDocument(userGuide, "https://github.com/orbitoosoft/orbitootoolkit/");
         documentService.approveDocument(userGuide);
         //
-        FacebookPage facebookPage = new FacebookPage();
-        documentService.initState(facebookPage);
+        Document facebookPage = new Document(UUID.randomUUID().toString(), DocumentType.FACEBOOK_PAGE, DocumentState.REQUESTED);
         documentService.createDocument(facebookPage, "https://github.com/orbitoosoft/orbitootoolkit/");
         while (!documentService.approveDocument(facebookPage)) {
             documentService.updateDocument(facebookPage, "https://www.facebook.com/orbitootoolkit/");

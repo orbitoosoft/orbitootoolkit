@@ -23,17 +23,20 @@ package org.orbitootoolkit.testapplication.doc.model;
 
 import org.orbitootoolkit.core.api.Tag;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
-public abstract class Document {
+public class Document {
     @NonNull
     private String id;
 
@@ -42,8 +45,16 @@ public abstract class Document {
     private DocumentType type;
 
     @NonNull
+    @Setter(value = AccessLevel.NONE)
     @Tag(name = "state", priority = 10)
     private DocumentState state;
 
     private String documentUri;
+
+    //
+
+    public void setState(DocumentState state) {
+        this.state = state;
+        log.info("new state: " + this);
+    }
 }

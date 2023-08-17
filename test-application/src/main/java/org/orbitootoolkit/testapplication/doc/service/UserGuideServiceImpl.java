@@ -29,10 +29,7 @@ import org.orbitootoolkit.core.api.TaggedValue;
 import org.orbitootoolkit.testapplication.doc.api.DocumentService;
 import org.orbitootoolkit.testapplication.doc.model.Document;
 import org.orbitootoolkit.testapplication.doc.model.DocumentState;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
@@ -47,61 +44,40 @@ public class UserGuideServiceImpl {
             servicePointName = "documentServicePoint", subjectClass = Document.class, //
             subjectTaggedValues = @TaggedValue(tag = "type", value = "USER_GUIDE") //
     )
-    public static @interface State {
+    public static @interface UserGuideState {
         @AliasFor(annotation = DomainService.class, attribute = "additionalTaggedValues")
         public TaggedValue[] value();
     }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Autowired
-    @Qualifier
-    @Lazy
-    public static @interface Ref {
-        @AliasFor(annotation = Qualifier.class, attribute = "value")
-        public String value();
-    }
-
     //
 
-    @State(@TaggedValue(tag = "state", value = "REQUESTED"))
-    public DocumentService getStateUserGuideRequested(@Ref("getStateUserGuideCreated") DocumentService stateCreated) {
+    @UserGuideState(@TaggedValue(tag = "state", value = "REQUESTED"))
+    public DocumentService stateUserGuideRequested() {
         return new DocumentService() {
             @Override
-            public void initState(Document document) {
-                document.setState(DocumentState.REQUESTED);
-                log.info("document requested: " + document.toString());
-            }
-
-            @Override
             public void createDocument(Document document, String documentUri) {
+                log.info("creating document: " + document);
                 document.setDocumentUri(documentUri);
-                stateCreated.initState(document);
+                document.setState(DocumentState.CREATED);
             }
         };
     }
 
-    @State(@TaggedValue(tag = "state", value = "CREATED"))
-    public DocumentService getStateUserGuideCreated(@Ref("getStateUserGuideApproved") DocumentService stateApproved) {
+    @UserGuideState(@TaggedValue(tag = "state", value = "CREATED"))
+    public DocumentService stateUserGuideCreated() {
         return new DocumentService() {
             @Override
-            public void initState(Document document) {
-                document.setState(DocumentState.CREATED);
-                log.info("document created: " + document.toString());
-            }
-
-            @Override
             public boolean approveDocument(Document document) {
-                stateApproved.initState(document);
+                log.info("approving document: " + document);
+                document.setState(DocumentState.APPROVED);
                 return true;
             }
         };
     }
 
-    @State(@TaggedValue(tag = "state", value = "APPROVED"))
-    public DocumentService getStateUserGuideApproved() {
-        return document -> {
-            document.setState(DocumentState.APPROVED);
-            log.info("document approved: " + document.toString());
+    @UserGuideState(@TaggedValue(tag = "state", value = "APPROVED"))
+    public DocumentService stateUserGuideApproved() {
+        return new DocumentService() {
         };
     }
 }

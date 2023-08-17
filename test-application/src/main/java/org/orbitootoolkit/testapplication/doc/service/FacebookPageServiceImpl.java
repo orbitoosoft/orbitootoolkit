@@ -30,10 +30,7 @@ import org.orbitootoolkit.core.api.TaggedValue;
 import org.orbitootoolkit.testapplication.doc.api.DocumentService;
 import org.orbitootoolkit.testapplication.doc.model.Document;
 import org.orbitootoolkit.testapplication.doc.model.DocumentState;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.stereotype.Component;
 
@@ -48,107 +45,74 @@ public class FacebookPageServiceImpl {
             servicePointName = "documentServicePoint", subjectClass = Document.class, //
             subjectTaggedValues = @TaggedValue(tag = "type", value = "FACEBOOK_PAGE") //
     )
-    public static @interface State {
+    public static @interface FacebookPageState {
         @AliasFor(annotation = DomainService.class, attribute = "additionalTaggedValues")
         public TaggedValue[] value();
     }
 
-    @Retention(RetentionPolicy.RUNTIME)
-    @Autowired
-    @Qualifier
-    @Lazy
-    public static @interface Ref {
-        @AliasFor(annotation = Qualifier.class, attribute = "value")
-        public String value();
-    }
-
     //
 
-    @State(@TaggedValue(tag = "state", value = "REQUESTED"))
-    public DocumentService getStateFacebookPageRequested(@Ref("getStateFacebookPageCreated") DocumentService stateCreated) {
+    @FacebookPageState(@TaggedValue(tag = "state", value = "REQUESTED"))
+    public DocumentService stateFacebookPageRequested() {
         return new DocumentService() {
-            @Override
-            public void initState(Document document) {
-                document.setState(DocumentState.REQUESTED);
-                log.info("document requested: " + document.toString());
-            }
-
             @Override
             public void createDocument(Document document, String documentUri) {
+                log.info("creating document: " + document);
                 document.setDocumentUri(documentUri);
-                stateCreated.initState(document);
+                document.setState(DocumentState.CREATED);
             }
         };
     }
 
-    @State(@TaggedValue(tag = "state", value = "CREATED"))
-    public DocumentService getStateFacebookPageCreated(@Ref("getStateFacebookPageApproved") DocumentService stateApproved, //
-            @Ref("getStateFacebookPageRejected") DocumentService stateRejected) {
+    @FacebookPageState(@TaggedValue(tag = "state", value = "CREATED"))
+    public DocumentService stateFacebookPageCreated() {
         return new DocumentService() {
             @Override
-            public void initState(Document document) {
-                document.setState(DocumentState.CREATED);
-                log.info("document created: " + document.toString());
-            }
-
-            @Override
             public boolean approveDocument(Document document) {
+                log.info("approving document: " + document);
                 if (StringUtils.startsWith(document.getDocumentUri(), "https://www.facebook.com/")) {
-                    stateApproved.initState(document);
+                    document.setState(DocumentState.APPROVED);
                     return true;
                 } else {
-                    stateRejected.initState(document);
+                    document.setState(DocumentState.REJECTED);
                     return false;
                 }
             }
         };
     }
 
-    @State(@TaggedValue(tag = "state", value = "REJECTED"))
-    public DocumentService getStateFacebookPageRejected(@Ref("getStateFacebookPageUpdated") DocumentService stateUpdated) {
+    @FacebookPageState(@TaggedValue(tag = "state", value = "REJECTED"))
+    public DocumentService stateFacebookPageRejected() {
         return new DocumentService() {
-            @Override
-            public void initState(Document document) {
-                document.setState(DocumentState.REJECTED);
-                log.info("document rejected: " + document.toString());
-            }
-
             @Override
             public void updateDocument(Document document, String documentUri) {
+                log.info("updating document: " + document);
                 document.setDocumentUri(documentUri);
-                stateUpdated.initState(document);
+                document.setState(DocumentState.UPDATED);
             }
         };
     }
 
-    @State(@TaggedValue(tag = "state", value = "UPDATED"))
-    public DocumentService getStateFacebookPageUpdated(@Ref("getStateFacebookPageApproved") DocumentService stateApproved, //
-            @Ref("getStateFacebookPageRejected") DocumentService stateRejected) {
+    @FacebookPageState(@TaggedValue(tag = "state", value = "UPDATED"))
+    public DocumentService stateFacebookPageUpdated() {
         return new DocumentService() {
             @Override
-            public void initState(Document document) {
-                document.setState(DocumentState.UPDATED);
-                log.info("document updated: " + document.toString());
-            }
-
-            @Override
             public boolean approveDocument(Document document) {
+                log.info("approving document: " + document);
                 if (StringUtils.startsWith(document.getDocumentUri(), "https://www.facebook.com/")) {
-                    stateApproved.initState(document);
+                    document.setState(DocumentState.APPROVED);
                     return true;
                 } else {
-                    stateRejected.initState(document);
+                    document.setState(DocumentState.REJECTED);
                     return false;
                 }
             }
         };
     }
 
-    @State(@TaggedValue(tag = "state", value = "APPROVED"))
-    public DocumentService getStateFacebookPageApproved() {
-        return document -> {
-            document.setState(DocumentState.APPROVED);
-            log.info("document approved: " + document.toString());
+    @FacebookPageState(@TaggedValue(tag = "state", value = "APPROVED"))
+    public DocumentService stateFacebookPageApproved() {
+        return new DocumentService() {
         };
     }
 }
