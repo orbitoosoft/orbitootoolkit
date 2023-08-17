@@ -49,6 +49,7 @@ public class Document {
     @Tag(name = "state", priority = 10)
     private DocumentState state;
 
+    @ToString.Exclude
     private String documentUri;
 
     //
