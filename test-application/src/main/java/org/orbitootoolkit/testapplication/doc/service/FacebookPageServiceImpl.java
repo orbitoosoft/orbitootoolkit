@@ -64,23 +64,6 @@ public class FacebookPageServiceImpl {
         };
     }
 
-    @FacebookPageState(@TaggedValue(tag = "state", value = "CREATED"))
-    public DocumentService stateFacebookPageCreated() {
-        return new DocumentService() {
-            @Override
-            public boolean approveDocument(Document document) {
-                log.info("approving document: " + document);
-                if (StringUtils.startsWith(document.getDocumentUri(), "https://www.facebook.com/")) {
-                    document.setState(DocumentState.APPROVED);
-                    return true;
-                } else {
-                    document.setState(DocumentState.REJECTED);
-                    return false;
-                }
-            }
-        };
-    }
-
     @FacebookPageState(@TaggedValue(tag = "state", value = "REJECTED"))
     public DocumentService stateFacebookPageRejected() {
         return new DocumentService() {
@@ -93,8 +76,7 @@ public class FacebookPageServiceImpl {
         };
     }
 
-    @FacebookPageState(@TaggedValue(tag = "state", value = "UPDATED"))
-    public DocumentService stateFacebookPageUpdated() {
+    private DocumentService newApproveFacebookPageService() {
         return new DocumentService() {
             @Override
             public boolean approveDocument(Document document) {
@@ -108,6 +90,16 @@ public class FacebookPageServiceImpl {
                 }
             }
         };
+    }
+
+    @FacebookPageState(@TaggedValue(tag = "state", value = "CREATED"))
+    public DocumentService stateFacebookPageCreated() {
+        return newApproveFacebookPageService();
+    }
+
+    @FacebookPageState(@TaggedValue(tag = "state", value = "UPDATED"))
+    public DocumentService stateFacebookPageUpdated() {
+        return newApproveFacebookPageService();
     }
 
     @FacebookPageState(@TaggedValue(tag = "state", value = "APPROVED"))
