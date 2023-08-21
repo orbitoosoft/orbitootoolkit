@@ -30,6 +30,6 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class File {
+public abstract class File {
     private String name;
 }
