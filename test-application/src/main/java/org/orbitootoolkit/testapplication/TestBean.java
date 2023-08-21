@@ -35,6 +35,8 @@ import org.orbitootoolkit.testapplication.doc.api.DocumentService;
 import org.orbitootoolkit.testapplication.doc.model.Document;
 import org.orbitootoolkit.testapplication.doc.model.DocumentState;
 import org.orbitootoolkit.testapplication.doc.model.DocumentType;
+import org.orbitootoolkit.testapplication.file.api.FilePrintService;
+import org.orbitootoolkit.testapplication.file.model.TxtFile;
 import org.orbitootoolkit.testapplication.payment.api.LoanService;
 import org.orbitootoolkit.testapplication.payment.api.OrderService;
 import org.orbitootoolkit.testapplication.task.api.IssueService;
@@ -69,6 +71,10 @@ public class TestBean {
     @Autowired
     @ServicePointReference
     private DocumentService documentService;
+
+    @Autowired
+    @ServicePointReference
+    private FilePrintService filePrinService;
 
     @SuppressWarnings("java:S1192")
     private void testInheritance() {
@@ -154,10 +160,21 @@ public class TestBean {
         }
     }
 
+    @SuppressWarnings("java:S1192")
+    private void testFile() {
+        log.info("----------------------------------------");
+        log.info("- testFile -----------------------------");
+        log.info("----------------------------------------");
+        //
+        TxtFile pdfFile = new TxtFile("readme.txt", "Hello, World !!!");
+        filePrinService.print(pdfFile);
+    }
+
     public void test() {
         testInheritance();
         testWorkflow();
         testDocument();
+        testFile();
         testCallback();
     }
 }
